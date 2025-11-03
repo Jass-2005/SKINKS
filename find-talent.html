@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Talent | Skinks: Local Skill Search</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Styles for Find Talent Page */
+        
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+        /* Scroll Reveal Transition Class (Copied from index.html) */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar (Copied and adjusted for active link) -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <!-- Active Link -->
+                    <a href="find-talent.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Find Talent</a>
+                    <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Post Task</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
+                    <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Call to Action Button -->
+                <div class="hidden md:block">
+                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Find Talent</a>
+                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Post Task</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="scroll-reveal">
+            <h1 class="text-4xl font-extrabold text-skinks-primary mb-2">Find Local Talent Near You</h1>
+            <p class="text-xl text-gray-600 mb-8">Tap into your neighborhood network. Search for skills within a 5km radius using our Geo-Discovery tool.</p>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8 scroll-reveal">
+            <form id="talent-search-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <!-- Skill Input -->
+                <div class="md:col-span-2">
+                    <label for="skill-search" class="block text-sm font-medium text-gray-700 mb-1">Skill or Keyword (e.g., Tutor, Electrician)</label>
+                    <div class="relative">
+                        <input type="text" id="skill-search" placeholder="What skill do you need?" class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Location / Distance Select -->
+                <div>
+                    <label for="distance" class="block text-sm font-medium text-gray-700 mb-1">Max Distance</label>
+                    <div class="relative">
+                        <select id="distance" class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary appearance-none bg-white">
+                            <option value="5">5 km (Default)</option>
+                            <option value="10">10 km</option>
+                            <option value="1">1 km</option>
+                            <option value="25">25 km (Local Region)</option>
+                        </select>
+                        <i data-lucide="compass" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div>
+                    <button type="submit" class="w-full p-3 bg-skinks-accent text-white font-semibold rounded-lg shadow-md hover:bg-pink-600 transition duration-300">
+                        Search Skinks
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Map and Listings Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Map Section (2/3 width on desktop) -->
+            <div class="lg:col-span-2 scroll-reveal">
+                <h2 class="text-2xl font-bold text-skinks-primary mb-4">Geo-Discovery Map (5km Radius)</h2>
+                <div class="bg-gray-300 rounded-xl shadow-2xl overflow-hidden" style="height: 500px;">
+                    <!-- Placeholder for Map API (e.g., Google Maps) -->
+                    <div class="flex items-center justify-center h-full text-center text-gray-700 p-8">
+                        <p class="text-xl font-medium">
+                            [Map Area Placeholder]<br>
+                            Visualizing nearby talent using **Geohashing and Clustering**.
+                            <br>
+                            <span class="text-sm text-skinks-primary mt-2 flex items-center justify-center">
+                                <i data-lucide="alert-triangle" class="w-4 h-4 mr-1"></i>
+                                Real-time pins show available skills within your selected distance.
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Talent Listings (1/3 width on desktop) -->
+            <div class="lg:col-span-1 scroll-reveal">
+                <h2 class="text-2xl font-bold text-skinks-primary mb-4">Nearby Matches (5)</h2>
+                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                    
+                    <!-- Talent Card 1 -->
+                    <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-lg text-gray-900">Jaspreet S.</h3>
+                            <span class="text-sm font-bold text-skinks-primary flex items-center">
+                                <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.8
+                            </span>
+                        </div>
+                        <p class="text-sm text-skinks-accent my-1">Web Designer | React Expert</p>
+                        <p class="text-xs text-gray-500">Distance: 1.2 km | Rate: ₹450/hr</p>
+                        <button class="mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</button>
+                    </div>
+
+                    <!-- Talent Card 2 -->
+                    <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-lg text-gray-900">Vanshaj Sharma</h3>
+                            <span class="text-sm font-bold text-skinks-primary flex items-center">
+                                <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 5.0
+                            </span>
+                        </div>
+                        <p class="text-sm text-skinks-accent my-1">Backend API Development</p>
+                        <p class="text-xs text-gray-500">Distance: 3.5 km | Rate: ₹600/hr</p>
+                        <button class="mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</button>
+                    </div>
+
+                    <!-- Talent Card 3 -->
+                    <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-lg text-gray-900">Priya K.</h3>
+                            <span class="text-sm font-bold text-skinks-primary flex items-center">
+                                <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.5
+                            </span>
+                        </div>
+                        <p class="text-sm text-skinks-accent my-1">Home Tutor (Math & Science)</p>
+                        <p class="text-xs text-gray-500">Distance: 0.8 km | Rate: ₹300/hr</p>
+                        <button class="mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</button>
+                    </div>
+
+                    <!-- Talent Card 4 -->
+                    <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-lg text-gray-900">Aryan M.</h3>
+                            <span class="text-sm font-bold text-skinks-primary flex items-center">
+                                <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.9
+                            </span>
+                        </div>
+                        <p class="text-sm text-skinks-accent my-1">Graphic Design | UI/UX</p>
+                        <p class="text-xs text-gray-500">Distance: 2.1 km | Rate: ₹550/hr</p>
+                        <button class="mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</button>
+                    </div>
+
+                    <!-- Talent Card 5 -->
+                    <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-lg text-gray-900">Kumar R.</h3>
+                            <span class="text-sm font-bold text-skinks-primary flex items-center">
+                                <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.2
+                            </span>
+                        </div>
+                        <p class="text-sm text-skinks-accent my-1">Certified Electrician</p>
+                        <p class="text-xs text-gray-500">Distance: 4.0 km | Rate: ₹350/visit</p>
+                        <button class="mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Call to Action Banner -->
+    <section class="bg-skinks-primary py-16 mt-8 scroll-reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Found what you need? Start collaborating!</h2>
+            <p class="text-xl text-skinks-secondary mb-8">Secure your local help instantly via instant chat and booking.</p>
+            <button onclick="handleJoinClick()" class="px-8 py-4 bg-skinks-accent text-white text-xl font-bold rounded-xl shadow-2xl hover:bg-pink-600 transition duration-300 transform hover:scale-105">
+                Post a Job & Hire Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 scroll-reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            
+            <!-- Logo/Brand -->
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
+                <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
+                <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
+            </div>
+
+            <!-- Site Map -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="find_talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="post_task.html" class="hover:text-skinks-accent transition duration-150">Post Task</a></li>
+                    <li><a href="how_it_works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="about_us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
+                <p class="text-gray-400 text-sm">Email: support@skinks.com</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- Core Application Logic ---
+
+        // 1. Mobile Menu Toggle Logic
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 2. Placeholder for Join/Login (since we don't have Firebase setup yet)
+        function handleJoinClick() {
+            console.log("Join Clicked: Redirecting to Sign Up/Login Modal.");
+            // In a real app, this would redirect to 'post_task.html' or open a login modal.
+            window.location.href = 'post_task.html';
+        }
+
+        // 3. Scroll Reveal Animation Logic (Intersection Observer)
+        const observerOptions = {
+            root: null, // relative to the viewport
+            rootMargin: '0px',
+            threshold: 0.1 // visible when 10% of the item is in view
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Stop observing once visible
+                }
+            });
+        }, observerOptions);
+
+        // Apply observer to all sections marked for reveal
+        document.querySelectorAll('.scroll-reveal').forEach(section => {
+            // Check if the element has content, exclude the main tag which is just a container
+            if (section.id !== 'main-content') {
+                observer.observe(section);
+            }
+        });
+
+        // 4. Placeholder Search Logic
+        document.getElementById('talent-search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const skill = document.getElementById('skill-search').value || 'a skill';
+            const distance = document.getElementById('distance').value;
+            console.log(`Searching for "${skill}" within ${distance} km...`);
+            // In a real app, this would trigger an API call to fetch actual nearby talent.
+
+            // Simulate search confirmation message
+            const searchButton = event.submitter;
+            const originalText = searchButton.textContent;
+            searchButton.textContent = `Searching...`;
+            searchButton.disabled = true;
+
+            setTimeout(() => {
+                searchButton.textContent = originalText;
+                searchButton.disabled = false;
+                alertMessage(`Search complete! Showing results for nearby talent.`);
+            }, 1000);
+        });
+
+        // Simple custom non-alert message box function
+        function alertMessage(message) {
+            let msgBox = document.getElementById('custom-alert');
+            if (!msgBox) {
+                msgBox = document.createElement('div');
+                msgBox.id = 'custom-alert';
+                msgBox.className = 'fixed top-4 right-4 z-[100] p-4 bg-skinks-accent text-white rounded-lg shadow-xl opacity-0 transition-opacity duration-300';
+                document.body.appendChild(msgBox);
+            }
+            msgBox.textContent = message;
+            msgBox.classList.remove('opacity-0');
+            msgBox.classList.add('opacity-100');
+            
+            setTimeout(() => {
+                msgBox.classList.remove('opacity-100');
+                msgBox.classList.add('opacity-0');
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>

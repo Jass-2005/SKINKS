@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | Skinks: Your Local Skill Marketplace</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+        /* Scroll Reveal Animation */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Styling for the step connectors */
+        .step-item {
+            position: relative;
+        }
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 2.5rem; /* Aligns with the center of the icon */
+            top: 5rem; /* Starts below the icon/text box */
+            height: calc(100% - 4rem); /* Adjust length */
+            width: 2px;
+            background-color: #a78bfa; /* skinks-secondary */
+            opacity: 0.5;
+            z-index: 1;
+        }
+        
+        /* Responsive step connector for mobile */
+        @media (max-width: 767px) {
+            .step-item:not(:last-child)::after {
+                left: 1.5rem; /* Adjust for smaller icon circle */
+                top: 4rem;
+                height: calc(100% - 3rem);
+            }
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
+                    <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Post Task</a>
+                    <!-- Active Link -->
+                    <a href="INDEX.HTML" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">How It Works</a>
+                    <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Call to Action Button -->
+                <div class="hidden md:block">
+                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
+                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Post Task</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">How It Works</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area: How It Works -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        <!-- Page Header -->
+        <div class="text-center mb-16 scroll-reveal">
+            <h1 class="text-5xl font-extrabold text-skinks-primary mb-3">How Skinks Works</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Connecting local needs with local skills in just a few simple steps.</p>
+        </div>
+
+        <!-- Grid layout for Hirers and Talent -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+
+            <!-- Column 1: For Hirers -->
+            <div class="scroll-reveal">
+                <h2 class="text-3xl font-bold text-skinks-accent mb-8 text-center md:text-left">For Hirers (I need help!)</h2>
+                <div class="space-y-10">
+                    
+                    <!-- Step 1: Post Task -->
+                    <div class="flex items-start space-x-4 step-item">
+                        <div class="flex-shrink-0 z-10">
+                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="clipboard-list" class="w-6 h-6 md:w-10 md:h-10"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">1. Post Your Task</h3>
+                            <p class="text-gray-600">
+                                Describe what you need, set your budget (fixed or hourly), and define the location (in-person or virtual). It's free to post!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Find Local Talent -->
+                    <div class="flex items-start space-x-4 step-item">
+                        <div class="flex-shrink-0 z-10">
+                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="map-pin" class="w-6 h-6 md:w-10 md:h-10"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">2. Find Local Talent</h3>
+                            <p class="text-gray-600">
+                                Skinks instantly notifies verified talent within your 5km radius. You can also browse profiles and invite skilled neighbors to apply.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Hire & Pay -->
+                    <div class="flex items-start space-x-4 step-item">
+                        <div class="flex-shrink-0 z-10">
+                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="thumbs-up" class="w-6 h-6 md:w-10 md:h-10"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">3. Hire & Pay Securely</h3>
+                            <p class="text-gray-600">
+                                Chat privately, compare offers, and hire the best person for your job. Once the task is done, pay securely through the platform.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Column 2: For Talent -->
+            <div class="scroll-reveal" style="transition-delay: 200ms;">
+                <h2 class="text-3xl font-bold text-skinks-accent mb-8 text-center md:text-left">For Talent (I have skills!)</h2>
+                <div class="space-y-10">
+                    
+                    <!-- Step 1: Create Profile -->
+                    <div class="flex items-start space-x-4 step-item">
+                        <div class="flex-shrink-0 z-10">
+                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="user-check" class="w-6 h-6 md:w-10 md:h-10"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">1. Create Your Profile</h3>
+                            <p class="text-gray-600">
+                                Showcase your expertise, set your hourly rate or fixed prices, and define your local service area. Get verified to build trust.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Get Notified -->
+                    <div class="flex items-start space-x-4 step-item">
+                        <div class="flex-shrink-0 z-10">
+                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="bell-ring" class="w-6 h-6 md:w-10 md:h-10"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">2. Get Notified Locally</h3>
+                            <p class="text-gray-600">
+                                Receive real-time alerts for new tasks posted in your neighborhood (within 5km) that match your skills. No more searching!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Apply & Get Hired -->
+                    <div class="flex items-start space-x-4 step-item">
+                        <div class="flex-shrink-0 z-10">
+                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
+                                <i data-lucide="indian-rupee" class="w-6 h-6 md:w-10 md:h-10"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">3. Apply & Get Hired</h3>
+                            <p class="text-gray-600">
+                                Send offers for tasks you want to complete. Chat with the hirer, get hired, and earn money right in your community.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-16 scroll-reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            
+            <!-- Logo/Brand -->
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
+                <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
+                <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
+            </div>
+
+            <!-- Site Map -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="find_talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="post_task.html" class="hover:text-skinks-accent transition duration-150">Post Task</a></li>
+                    <li><a href="how_it_works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="about_us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
+                <p class="text-gray-400 text-sm">Email: support@skinks.com</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- Core Application Logic ---
+
+        // 1. Mobile Menu Toggle Logic
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 2. Placeholder for Join/Login (sends back to index for now)
+        function handleJoinClick() {
+            console.log("Join Clicked: Redirecting to Home.");
+            window.location.href = 'index.html';
+        }
+
+        // 3. Scroll Reveal Animation Logic (Intersection Observer)
+        const observerOptions = {
+            root: null, // relative to the viewport
+            rootMargin: '0px',
+            threshold: 0.1 // visible when 10% of the item is in view
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Stop observing once visible
+                }
+            });
+        }, observerOptions);
+
+        // Apply observer to all sections marked for reveal
+        document.querySelectorAll('.scroll-reveal').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>

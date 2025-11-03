@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Skinks: Your Local Skill Marketplace</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+        /* Scroll Reveal Animation */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Team card hover effect */
+        .team-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
+                    <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Post Task</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
+                    <!-- Active Link -->
+                    <a href="About-Us.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Call to Action Button -->
+                <div class="hidden md:block">
+                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
+                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Post Task</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area: About Us -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        <!-- Page Header -->
+        <div class="text-center mb-16 scroll-reveal">
+            <h1 class="text-5xl font-extrabold text-skinks-primary mb-4">Our Mission</h1>
+            <p class="text-2xl text-gray-700 max-w-3xl mx-auto font-light leading-relaxed">
+                "Every community has hidden talent. <strong class="font-semibold text-skinks-accent">Skinks helps you discover it.</strong>"
+            </p>
+        </div>
+
+        <!-- Our Story Section -->
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden mb-16 scroll-reveal">
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <!-- Text Content -->
+                <div class="p-8 md:p-12">
+                    <h2 class="text-3xl font-bold text-skinks-primary mb-4">The Hyperlocal Problem</h2>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        We saw a major disconnect. Global freelancing platforms are amazing, but they're too broad for everyday, local needs. Finding a reliable electrician, a last-minute photographer, or a math tutor in your own neighborhood was surprisingly difficult.
+                    </p>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Tasks went unfulfilled while skilled neighbors (students, homemakers, local freelancers) missed out on micro-income opportunities right next door.
+                    </p>
+                    <h2 class="text-3xl font-bold text-skinks-primary mb-4">Our Solution</h2>
+                    <p class="text-gray-600 leading-relaxed">
+                        Skinks was born to bridge this gap. We're a hyperlocal-first platform focused on connecting you with verified talent within a 2-5km radius. Our goal is to build community trust, empower local economies, and make collaboration as simple as walking down the street.
+                    </p>
+                </div>
+                <!-- Image -->
+                <div class="bg-skinks-secondary/20 flex items-center justify-center p-8 min-h-[300px] md:min-h-full">
+                    <i data-lucide="users" class="w-40 h-40 text-skinks-primary opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meet the Innovators Section -->
+        <div class="text-center mb-16 scroll-reveal">
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-3">Meet the Skinks Innovators</h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                We are a passionate team of developers and designers who believe in the power of local connection.
+            </p>
+        </div>
+
+        <!-- Team Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            
+            <!-- Team Card: Jaspreet Singh -->
+            <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal">
+                <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="user-circle-2" class="w-24 h-24 text-skinks-secondary"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900">Jaspreet Singh (TL)</h3>
+                <p class="text-skinks-primary font-semibold text-lg mb-2">Team Lead & Frontend Architect</p>
+                <p class="text-gray-600 text-sm">
+                    Jaspreet leads the project vision and integration, architecting the seamless, responsive user interface that brings Skinks to life.
+                </p>
+            </div>
+
+            <!-- Team Card: Aryan -->
+            <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal" style="transition-delay: 200ms;">
+                <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="user-circle-2" class="w-24 h-24 text-skinks-secondary"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900">Aryan</h3>
+                <p class="text-skinks-primary font-semibold text-lg mb-2">User Interface & Database</p>
+                <p class="text-gray-600 text-sm">
+                    Aryan designs the intuitive user journey and manages the database, ensuring our philosophy of "simplicity and speed" is a reality.
+                </p>
+            </div>
+
+            <!-- Team Card: Vanshaj Sharma -->
+            <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal" style="transition-delay: 400ms;">
+                <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="user-circle-2" class="w-24 h-24 text-skinks-secondary"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900">Vanshaj Sharma</h3>
+                <p class="text-skinks-primary font-semibold text-lg mb-2">Backend Developer</p>
+                <p class="text-gray-600 text-sm">
+                    Vanshaj is the architect of our robust backend, building the Node.js + Express API that handles all the logic, matching, and data management.
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-16 scroll-reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            
+            <!-- Logo/Brand -->
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
+                <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
+                <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
+            </div>
+
+            <!-- Site Map -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="find_talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="post_task.html" class="hover:text-skinks-accent transition duration-150">Post Task</a></li>
+                    <li><a href="how_it_works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="about_us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
+                <p class="text-gray-400 text-sm">Email: support@skinks.com</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- Core Application Logic ---
+
+        // 1. Mobile Menu Toggle Logic
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 2. Placeholder for Join/Login (sends back to index for now)
+        function handleJoinClick() {
+            console.log("Join Clicked: Redirecting to Home.");
+            window.location.href = 'index.html';
+        }
+
+        // 3. Scroll Reveal Animation Logic (Intersection Observer)
+        const observerOptions = {
+            root: null, // relative to the viewport
+            rootMargin: '0px',
+            threshold: 0.1 // visible when 10% of the item is in view
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Stop observing once visible
+                }
+            });
+        }, observerOptions);
+
+        // Apply observer to all sections marked for reveal
+        document.querySelectorAll('.scroll-reveal').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
