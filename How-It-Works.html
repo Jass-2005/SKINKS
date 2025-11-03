@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How It Works | Skinks: Your Local Skill Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Skinks: How It Works</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
@@ -27,19 +27,12 @@
         }
     </script>
     <style>
-        /* Custom Styles */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #a78bfa;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f9fafb;
-        }
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #f9fafb; }
 
-        /* Scroll Reveal Animation */
+        /* Scroll Reveal Transition Class */
         .scroll-reveal {
             opacity: 0;
             transform: translateY(20px);
@@ -50,30 +43,87 @@
             transform: translateY(0);
         }
 
-        /* Styling for the step connectors */
-        .step-item {
+        /* Hover effect for timeline cards */
+        .timeline-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .timeline-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.1); /* Soft purple shadow */
+        }
+
+        /* Vertical Timeline Styles */
+        .timeline-container {
             position: relative;
         }
-        .step-item:not(:last-child)::after {
+
+        /* The central vertical line */
+        .timeline-container::before {
             content: '';
             position: absolute;
-            left: 2.5rem; /* Aligns with the center of the icon */
-            top: 5rem; /* Starts below the icon/text box */
-            height: calc(100% - 4rem); /* Adjust length */
-            width: 2px;
-            background-color: #a78bfa; /* skinks-secondary */
-            opacity: 0.5;
-            z-index: 1;
+            top: 2rem; /* MODIFIED: Start at the first horizontal line's level */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 0%; /* Start at 0 height */
+            background-color: #e5e7eb; /* gray-200 */
+            transition: height 2s ease-out 0.5s; /* Animate height with transition, slight delay */
+        }
+
+        /* When timeline container is visible, draw the line */
+        .timeline-container.visible::before {
+            height: 100%; /* Draw full height from the new top position */
+        }
+
+        .timeline-item {
+            position: relative;
+            width: 100%;
+            padding-left: 0; 
         }
         
-        /* Responsive step connector for mobile */
-        @media (max-width: 767px) {
-            .step-item:not(:last-child)::after {
-                left: 1.5rem; /* Adjust for smaller icon circle */
-                top: 4rem;
-                height: calc(100% - 3rem);
+        /* Desktop alternating layout */
+        @media (min-width: 768px) {
+            .timeline-item {
+                width: 50%;
+                padding-left: 0; /* Reset mobile padding */
+                padding-right: 2.5rem; /* Space from center line */
+                margin-bottom: 2.5rem; /* 40px */
+            }
+
+            /* NEW: Horizontal connecting line for all desktop items */
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                top: 2rem; /* 32px, aligns roughly with card title/top area */
+                height: 3px;
+                background-color: #e5e7eb; /* gray-200 */
+                width: 0; /* Start at 0 width for animation */
+                transition: width 0.5s ease-out 1s; /* Animate width, delay after main line draws */
+            }
+            
+            /* Animate line when visible */
+            .timeline-item.visible::before {
+                width: 2.5rem; /* The length of the padding */
+            }
+
+            /* Left-side item line position */
+            .timeline-item:nth-child(odd)::before {
+                right: 0;
+            }
+
+            /* Right-side item */
+            .timeline-item:nth-child(even) {
+                margin-left: 50%;
+                padding-left: 2.5rem; /* Space from center line */
+                padding-right: 0;
+            }
+            
+            /* Right-side item line position */
+            .timeline-item:nth-child(even)::before {
+                left: 0;
             }
         }
+
     </style>
 </head>
 <body class="bg-skinks-background font-sans text-gray-800">
@@ -86,15 +136,15 @@
                 <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
                     Skinks
                 </a>
-                <!-- Desktop Navigation -->
+                <!-- Desktop Navigation (Active link is How It Works) -->
                 <nav class="hidden md:flex space-x-6">
                     <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="How-It-Works.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">How It Works</a>
+                   
                     <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
                     <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
-                    <!-- Active Link -->
-                    <a href="INDEX.HTML" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">How It Works</a>
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
-                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-1A50">Help</a>
                 </nav>
                 <!-- Call to Action Button -->
                 <div class="hidden md:block">
@@ -112,9 +162,10 @@
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
-                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
-                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
                 <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">How It Works</a>
+                
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
+                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-month-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
                 <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
@@ -124,160 +175,91 @@
         </div>
     </header>
 
-    <!-- Main Content Area: How It Works -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <!-- Main Content -->
+    <main class="py-12 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Page Header -->
-        <div class="text-center mb-16 scroll-reveal">
-            <h1 class="text-5xl font-extrabold text-skinks-primary mb-3">How Skinks Works</h1>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Connecting local needs with local skills in just a few simple steps.</p>
-        </div>
+        <header class="text-center mb-16 sm:mb-24 scroll-reveal">
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">
+                How Skinks Works
+            </h1>
+            <p class="text-xl text-gray-500 max-w-4xl mx-auto font-light">
+                A simple, secure journey for both hirers and local talent.
+            </WELCOME>
+        </header>
 
-        <!-- Grid layout for Hirers and Talent -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+        <!-- Vertical Alternating Timeline -->
+        <div class="timeline-container max-w-3xl mx-auto scroll-reveal">
 
-            <!-- Column 1: For Hirers -->
-            <div class="scroll-reveal">
-                <h2 class="text-3xl font-bold text-skinks-accent mb-8 text-center md:text-left">For Hirers (I need help!)</h2>
-                <div class="space-y-10">
-                    
-                    <!-- Step 1: Task Hub -->
-                    <div class="flex items-start space-x-4 step-item">
-                        <div class="flex-shrink-0 z-10">
-                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
-                                <i data-lucide="clipboard-list" class="w-6 h-6 md:w-10 md:h-10"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">1. Post Your Task</h3>
-                            <p class="text-gray-600">
-                                Describe what you need, set your budget (fixed or hourly), and define the location (in-person or virtual). It's free to post!
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Find Local Talent -->
-                    <div class="flex items-start space-x-4 step-item">
-                        <div class="flex-shrink-0 z-10">
-                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
-                                <i data-lucide="map-pin" class="w-6 h-6 md:w-10 md:h-10"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">2. Find Local Talent</h3>
-                            <p class="text-gray-600">
-                                Skinks instantly notifies verified talent within your 5km radius. You can also browse profiles and invite skilled neighbors to apply.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Hire & Pay -->
-                    <div class="flex items-start space-x-4 step-item">
-                        <div class="flex-shrink-0 z-10">
-                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
-                                <i data-lucide="thumbs-up" class="w-6 h-6 md:w-10 md:h-10"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">3. Hire & Pay Securely</h3>
-                            <p class="text-gray-600">
-                                Chat privately, compare offers, and hire the best person for your job. Once the task is done, pay securely through the platform.
-                            </p>
-                        </div>
-                    </div>
-
+            <!-- Step 1: Hirer -->
+            <div class="timeline-item md:text-right scroll-reveal">
+                <div class="timeline-card p-6 bg-white rounded-xl shadow-lg border-t-4 border-skinks-accent">
+                    <span class="text-xs font-semibold uppercase text-skinks-accent">Step 1 (For Hirers)</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1 mb-2">Post Your Task</h3>
+                    <p class="text-gray-600 font-light text-lg">Describe what you need, set your budget (fixed or hourly), and define the location. It's free to post!</p>
                 </div>
             </div>
 
-            <!-- Column 2: For Talent -->
-            <div class="scroll-reveal" style="transition-delay: 200ms;">
-                <h2 class="text-3xl font-bold text-skinks-accent mb-8 text-center md:text-left">For Talent (I have skills!)</h2>
-                <div class="space-y-10">
-                    
-                    <!-- Step 1: Create Profile -->
-                    <div class="flex items-start space-x-4 step-item">
-                        <div class="flex-shrink-0 z-10">
-                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
-                                <i data-lucide="user-check" class="w-6 h-6 md:w-10 md:h-10"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">1. Create Your Profile</h3>
-                            <p class="text-gray-600">
-                                Showcase your expertise, set your hourly rate or fixed prices, and define your local service area. Get verified to build trust.
-                            </p>
-                        </div>
-                    </div>
+            <!-- Step 2: Talent -->
+            <div class="timeline-item mt-8 md:mt-0 scroll-reveal" style="transition-delay: 150ms;">
+                <div class="timeline-card p-6 bg-white rounded-xl shadow-lg border-t-4 border-skinks-primary">
+                    <span class="text-xs font-semibold uppercase text-skinks-primary">Step 2 (For Talent)</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1 mb-2">Get Notified & Apply</h3>
+                    <p class="text-gray-600 font-light text-lg">Create your profile, get verified, and receive real-time alerts for local tasks. Apply to jobs you want.</p>
+                </div>
+            </div>
 
-                    <!-- Step 2: Get Notified -->
-                    <div class="flex items-start space-x-4 step-item">
-                        <div class="flex-shrink-0 z-10">
-                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
-                                <i data-lucide="bell-ring" class="w-6 h-6 md:w-10 md:h-10"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">2. Get Notified Locally</h3>
-                            <p class="text-gray-600">
-                                Receive real-time alerts for new tasks posted in your neighborhood (within 5km) that match your skills. No more searching!
-                            </p>
-                        </div>
-                    </div>
+            <!-- Step 3: Hirer -->
+            <div class="timeline-item mt-8 md:mt-0 md:text-right scroll-reveal" style="transition-delay: 300ms;">
+                 <div class="timeline-card p-6 bg-white rounded-xl shadow-lg border-t-4 border-skinks-accent">
+                    <span class="text-xs font-semibold uppercase text-skinks-accent">Step 3 (For Hirers)</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1 mb-2">Hire the Best Fit</h3>
+                    <p class="text-gray-600 font-light text-lg">Chat privately, compare offers from local talent, and hire the person best for your job.</p>
+                </div>
+            </div>
 
-                    <!-- Step 3: Apply & Get Hired -->
-                    <div class="flex items-start space-x-4 step-item">
-                        <div class="flex-shrink-0 z-10">
-                            <div class="w-12 h-12 md:w-20 md:h-20 bg-skinks-secondary/20 text-skinks-primary rounded-full flex items-center justify-center">
-                                <i data-lucide="indian-rupee" class="w-6 h-6 md:w-10 md:h-10"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">3. Apply & Get Hired</h3>
-                            <p class="text-gray-600">
-                                Send offers for tasks you want to complete. Chat with the hirer, get hired, and earn money right in your community.
-                            </p>
-                        </div>
-                    </div>
-
+            <!-- Step 4: Both -->
+            <div class="timeline-item mt-8 md:mt-0 scroll-reveal" style="transition-delay: 450ms;">
+                <div class="timeline-card p-6 bg-white rounded-xl shadow-lg border-t-4 border-green-500">
+                    <span class="text-xs font-semibold uppercase text-green-600">Step 4 (Everyone)</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1 mb-2">Complete & Pay Securely</h3>
+                    <p class="text-gray-600 font-light text-lg">Once the task is done, the Hirer releases the payment, and the Talent gets paid. Simple and secure.</p>
                 </div>
             </div>
 
         </div>
+
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12 mt-16 scroll-reveal">
+    <footer class="bg-gray-800 text-white py-12 mt-16 sm:mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-            
             <!-- Logo/Brand -->
             <div class="col-span-2 md:col-span-1">
                 <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
                 <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
                 <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
             </div>
-
             <!-- Site Map -->
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="find_talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
-                    <li><a href="post_task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
-                    <li><a href="how_it_works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
                     <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
                 </ul>
             </div>
-
             <!-- Resources -->
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="about_us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
-                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-1L50">Careers</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
                 </ul>
             </div>
-
             <!-- Contact -->
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
@@ -305,32 +287,40 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        // 2. Placeholder for Join/Login (sends back to index for now)
-        function handleJoinClick() {
-            console.log("Join Clicked: Redirecting to Home.");
-            window.location.href = 'index.html';
+        // 2. Placeholder for Join/Login
+        window.handleJoinClick = function() {
+            console.log("Join Clicked: Placeholder for modal/redirect.");
         }
 
         // 3. Scroll Reveal Animation Logic (Intersection Observer)
-        const observerOptions = {
-            root: null, // relative to the viewport
-            rootMargin: '0px',
-            threshold: 0.1 // visible when 10% of the item is in view
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            // Make header section visible on load right away
+            const headerSection = document.querySelector('main > header.scroll-reveal');
+            if (headerSection) {
+                 headerSection.classList.add('visible');
+            }
 
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target); // Stop observing once visible
-                }
+            const observerOptions = {
+                root: null, 
+                rootMargin: '0px',
+                threshold: 0.1 
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => { 
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all timeline items AND the container
+            document.querySelectorAll('.timeline-item.scroll-reveal, .timeline-container.scroll-reveal').forEach(element => {
+                observer.observe(element);
             });
-        }, observerOptions);
-
-        // Apply observer to all sections marked for reveal
-        document.querySelectorAll('.scroll-reveal').forEach(section => {
-            observer.observe(section);
         });
     </script>
 </body>
 </html>
+

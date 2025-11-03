@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skinks: View Worker Profile</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #f9fafb; }
+
+        /* Star rating display */
+        .stars {
+            display: inline-flex;
+            color: #d1d5db; /* gray-300 */
+        }
+        .stars[data-rating="1"] .star-1,
+        .stars[data-rating="2"] .star-1, .stars[data-rating="2"] .star-2,
+        .stars[data-rating="3"] .star-1, .stars[data-rating="3"] .star-2, .stars[data-rating="3"] .star-3,
+        .stars[data-rating="4"] .star-1, .stars[data-rating="4"] .star-2, .stars[data-rating="4"] .star-3, .stars[data-rating="4"] .star-4,
+        .stars[data-rating="5"] .star-1, .stars[data-rating="5"] .star-2, .stars[data-rating="5"] .star-3, .stars[data-rating="5"] .star-4, .stars[data-rating="5"] .star-5 {
+            color: #f59e0b; /* amber-500 */
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation (Active link is Find Talent) -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
+                    
+                    <a href="find-talent.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Find Talent</a>
+                    <a href="Post-Task.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
+                    <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Call to Action Button -->
+                <div class="hidden md:block">
+                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
+                
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Find Talent</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Profile Content -->
+    <main class="py-12 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Back Button -->
+        <a href="find-talent.html" class="text-sm font-semibold text-skinks-secondary hover:text-skinks-primary flex items-center mb-6 transition duration-150">
+            <i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i> Back to Task Listings
+        </a>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" class="text-center p-10">
+            <div class="flex items-center justify-center space-x-2">
+                <div classT="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-skinks-primary"></div>
+                <span class="text-lg text-gray-600">Loading Worker Profile...</span>
+            </div>
+        </div>
+
+        <!-- Profile Content (Hidden by default) -->
+        <div id="profile-content" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column (Profile Card) -->
+                <aside class="lg:col-span-1 space-y-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 text-center">
+                        <img id="profile-avatar" src="https://placehold.co/128x128/a78bfa/ffffff?text=S" alt="Worker Avatar" class="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-white shadow-lg">
+                        <h1 id="profile-name" class="text-3xl font-bold text-gray-900"></h1>
+                        <p id="profile-title" class="text-lg font-medium text-skinks-primary"></p>
+                        
+                        <div class="flex items-center justify-center space-x-1 mt-2 stars" data-rating="0">
+                            <i data-lucide="star" class="w-5 h-5 star-1 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 star-2 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 star-3 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 star-4 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 star-5 fill-current"></i>
+                        </div>
+                        <span id="profile-rating-text" class="text-sm text-gray-500 ml-2"></span>
+
+                        <p id="profile-location" class="text-gray-500 mt-4 flex items-center justify-center">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-skinks-secondary"></i>
+                        </p>
+                        
+                        <button id="contact-button" class="w-full mt-8 px-6 py-3 bg-skinks-accent text-white font-semibold rounded-lg shadow-md hover:bg-pink-600 transition duration-300">
+                            Contact Worker
+                        </button>
+                    </div>
+
+                    <!-- Stats Card -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Worker Stats</h3>
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex justify-between items-center">
+                                <span class="font-medium">Jobs Completed</span>
+                                <span id="profile-jobs" class="font-bold text-skinks-primary text-lg"></span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span class="font-medium">Hourly Rate</span>
+                                <span id="profile-rate" class="font-bold text-skinks-primary text-lg"></span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span class="font-medium">Member Since</span>
+                                <span id="profile-member-since" class="font-bold text-skinks-primary text-lg"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Right Column (Details & Reviews) -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- About Me -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">About Me</h3>
+                        <p id="profile-about" class="text-gray-700 leading-relaxed space-y-4"></p>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Top Skills</h3>
+                        <div id="profile-skills" class="flex flex-wrap gap-2">
+                            <!-- Skills will be dynamically injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Reviews -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Recent Reviews</h3>
+                        <div id="profile-reviews" class="space-y-6">
+                            <!-- Reviews will be dynamically injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <!-- Logo/Brand -->
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
+                <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
+                <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
+            </div>
+            <!-- Site Map -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                </ul>
+            </div>
+            <!-- Resources -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
+                </ul>
+            </div>
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
+                <p class="text-gray-400 text-sm">Email: support@skinks.com</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 
+      JavaScript for Mobile Menu, Icon Rendering, 
+      and Mock API Profile Loading
+    -->
+    <script type="module">
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- Mobile Menu Toggle Logic ---
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Placeholder for Join/Login ---
+        window.handleJoinClick = function() {
+            console.log("Join Clicked: Placeholder for modal/redirect.");
+        }
+        
+        // --- Mock Worker Database (Simulating MongoDB API Response) ---
+        // This is a helper function to simulate the API response.
+        // In a real app, this data lives on your MongoDB server.
+        function getMockWorkerById(workerId) {
+            const mockDatabase = {
+                "W-123": {
+                    _id: "W-123",
+                    name: "Sarah Jenkins",
+                    title: "Verified Home Repair Expert",
+                    avatarUrl: "https://placehold.co/128x128/a78bfa/ffffff?text=SJ",
+                    location: "Springfield, 1.2 km away",
+                    rating: 5,
+                    ratingCount: 42,
+                    jobsCompleted: 58,
+                    hourlyRate: "$45/hr",
+                    memberSince: "2023",
+                    about: "I'm a certified and insured home repair specialist with over 10 years of experience. My focus is on providing high-quality, reliable work for my neighbors. I specialize in plumbing, electrical fixes, and general carpentry.\n\nNo job is too small, from fixing a leaky faucet to installing a new ceiling fan. I always clean up after my work and guarantee your satisfaction.",
+                    skills: ["Plumbing", "Electrical", "Carpentry", "Drywall Repair", "Painting", "Appliance Installation"],
+                    reviews: [
+                        { _id: "R-1", author: "Mark T.", rating: 5, comment: "Sarah was amazing! She fixed our broken fence post in under an hour and was incredibly professional. Highly recommend." },
+                        { _id: "R-2", author: "Lisa G.", rating: 5, comment: "I hired Sarah to install a new light fixture. She was punctual, friendly, and did a perfect job. Will definitely hire her again." }
+                    ]
+                },
+                "W-456": {
+                    _id: "W-456",
+                    name: "David Lee",
+                    title: "Senior Web Developer (React & Node.js)",
+                    avatarUrl: "https://placehold.co/128x128/6d28d9/ffffff?text=DL",
+                    location: "Remote (Springfield)",
+                    rating: 5,
+                    ratingCount: 29,
+                    jobsCompleted: 34,
+                    hourlyRate: "$55/hr",
+                    memberSince: "2022",
+                    about: "Full-stack developer with a passion for building fast, responsive, and user-friendly web applications. I can help with anything from a simple WordPress site cleanup to a full custom application build.",
+                    skills: ["React", "Node.js", "WordPress", "MongoDB", "Tailwind CSS", "Site Optimization"],
+                    reviews: [
+                        { _id: "R-3", author: "Local Business", rating: 5, comment: "David optimized our WordPress site and it's never been faster. He explained everything clearly and delivered ahead of schedule." },
+                        { _id: "R-4", author: "Jen S.", rating: 5, comment: "Incredibly talented developer. David helped me build a small e-commerce prototype. His code is clean and he's a great communicator." }
+                    ]
+                }
+            };
+            return mockDatabase[workerId];
+        }
+
+        // --- Profile Loading Logic ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            // Default to W-123 if no ID is provided in the URL
+            const workerId = params.get('id') || "W-123"; 
+
+            loadProfile(workerId);
+        });
+
+        /**
+         * Fetches profile data from the mock API and renders it.
+         * @param {string} workerId - The ID of the worker to fetch.
+         */
+        async function loadProfile(workerId) {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const profileContent = document.getElementById('profile-content');
+            
+            try {
+                // This is where you would fetch from your MongoDB API:
+                // const response = await fetch(`/api/workers/${workerId}`);
+                // const workerData = await response.json();
+                
+                // For this demo, we call the mock API function:
+                const workerData = await mockApiCall(workerId);
+                
+                // Once data is fetched, render it
+                renderProfile(workerData);
+                
+                // Hide loader, show content
+                loadingIndicator.classList.add('hidden');
+                profileContent.classList.remove('hidden');
+                lucide.createIcons(); // Re-render icons after dynamic content is added
+                
+            } catch (error) {
+                console.error(error);
+                loadingIndicator.innerHTML = `<p class="text-red-600 font-semibold text-lg">${error.message}</p>`;
+            }
+        }
+
+        /**
+         * Simulates fetching a worker from a MongoDB API.
+         * @param {string} workerId
+         */
+        function mockApiCall(workerId) {
+            console.log(`Mock API: Fetching /api/workers/${workerId}`);
+            
+            return new Promise((resolve, reject) => {
+                // Simulate network delay
+                setTimeout(() => {
+                    // Get data from our mock database function
+                    const worker = getMockWorkerById(workerId);
+                    
+                    if (worker) {
+                        console.log("Mock API: Found worker", worker);
+                        resolve(worker); // Success
+                    } else {
+                        console.error("Mock API: Worker not found");
+                        reject(new Error(`Worker with ID "${workerId}" not found.`)); // Failure
+                    }
+                }, 1000); // 1-second delay
+            });
+        }
+
+        /**
+         * Populates the HTML elements with the worker's data.
+         * @param {object} worker
+         */
+        function renderProfile(worker) {
+            // Profile Card
+            document.getElementById('profile-avatar').src = worker.avatarUrl;
+            document.getElementById('profile-avatar').alt = `${worker.name}'s avatar`;
+            document.getElementById('profile-name').textContent = worker.name;
+            document.getElementById('profile-title').textContent = worker.title;
+            document.getElementById('profile-location').innerHTML = `
+                <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-skinks-secondary"></i> ${worker.location}
+            `;
+            document.getElementById('contact-button').textContent = `Contact ${worker.name.split(' ')[0]}`;
+
+            // Rating
+            document.querySelector('.stars').dataset.rating = worker.rating;
+            document.getElementById('profile-rating-text').textContent = `(${worker.ratingCount} reviews)`;
+
+            // Stats Card
+            document.getElementById('profile-jobs').textContent = worker.jobsCompleted;
+            document.getElementById('profile-rate').textContent = worker.hourlyRate;
+            document.getElementById('profile-member-since').textContent = worker.memberSince;
+
+            // About Me
+            document.getElementById('profile-about').innerHTML = worker.about.replace(/\n/g, '<br><br>');
+
+            // Skills
+            const skillsContainer = document.getElementById('profile-skills');
+            skillsContainer.innerHTML = ''; // Clear defaults
+            worker.skills.forEach(skill => {
+                const skillTag = document.createElement('span');
+                skillTag.className = "px-3 py-1 bg-skinks-primary/10 text-skinks-primary font-medium rounded-full text-sm";
+                skillTag.textContent = skill;
+                skillsContainer.appendChild(skillTag);
+            });
+
+            // Reviews
+            const reviewsContainer = document.getElementById('profile-reviews');
+            reviewsContainer.innerHTML = ''; // Clear defaults
+            if (worker.reviews && worker.reviews.length > 0) {
+                worker.reviews.forEach(review => {
+                    const reviewEl = document.createElement('div');
+                    reviewEl.className = "border-t border-gray-100 pt-6";
+                    
+                    const starsHTML = `
+                        <div class="flex items-center space-x-1 stars" data-rating="${review.rating}">
+                            <i data-lucide="star" class="w-4 h-4 star-1 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 star-2 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 star-3 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 star-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 star-5 fill-current"></i>
+                        </div>
+                    `;
+                    
+                    reviewEl.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-gray-800">${review.author}</h4>
+                            ${starsHTML}
+                        </div>
+                        <p class="text-gray-600 italic">"${review.comment}"</p>
+                    `;
+                    reviewsContainer.appendChild(reviewEl);
+                });
+            } else {
+                reviewsContainer.innerHTML = `<p class="text-gray-500 italic">No reviews yet.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
+

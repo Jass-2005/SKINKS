@@ -76,9 +76,9 @@
                 <!-- Desktop Navigation (Active link is Task Hub) -->
                 <nav class="hidden md:flex space-x-6">
                     <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
                     <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
                     <a href="Post-Task.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Task Hub</a>
-                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
                 </nav>
@@ -98,9 +98,9 @@
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
                 <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
                 <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task Hub</a>
-                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
                 <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
@@ -147,7 +147,7 @@
 
                         <!-- Skill Category -->
                         <div>
-                            <label for="task-category" class="block text-sm font-semibold text-gray-700 mb-2">Skill Category</Vlabel>
+                            <label for="task-category" class="block text-sm font-semibold text-gray-700 mb-2">Skill Category</label>
                             <select id="task-category" class="form-input-minimal w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 appearance-none" required>
                                 <option value="" disabled selected>Select a category...</option>
                                 <option value="Home Repair">Home Repair</option>
@@ -209,6 +209,15 @@
                 </div>
             </form>
         </div>
+
+        <!-- New Section: Posted Tasks List -->
+        <section id="posted-tasks-section" class="mt-16 pt-8 border-t border-gray-200">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Your Recently Posted Task</h2>
+            <div id="posted-tasks-list" class="space-y-6">
+                <!-- Successfully posted tasks will be added here -->
+                <p id="no-tasks-message" class="text-gray-500 italic">No tasks posted yet. Post one above!</p>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -254,7 +263,7 @@
 
     <!-- 
       JavaScript for Mobile Menu, Icon Rendering, 
-      and Mock API Submission Logic
+      and Task Submission Logic
     -->
     <script type="module">
         // Initialize Lucide icons
@@ -293,6 +302,8 @@
         const submitButtonText = document.getElementById('submit-button-text');
         const submitSpinner = document.getElementById('submit-spinner');
         const messageContainer = document.getElementById('message-container');
+        const postedTasksList = document.getElementById('posted-tasks-list');
+        const noTasksMessage = document.getElementById('no-tasks-message');
 
         // Listen for form submission
         taskForm.addEventListener('submit', handleTaskSubmission);
@@ -344,6 +355,7 @@
                 
                 // Handle Success
                 showMessage(`Task "${response.title}" posted successfully!`, 'success');
+                displayPostedTask(response); // <--- Display the posted task
                 taskForm.reset(); // Clear the form
 
             } catch (error) {
@@ -391,10 +403,12 @@
             if (isLoading) {
                 submitButton.disabled = true;
                 submitButtonText.textContent = 'Posting...';
+                submitButton.classList.add('opacity-70');
                 submitSpinner.classList.remove('hidden');
             } else {
                 submitButton.disabled = false;
                 submitButtonText.textContent = 'Post Your Task';
+                submitButton.classList.remove('opacity-70');
                 submitSpinner.classList.add('hidden');
             }
         }
@@ -451,7 +465,55 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        /**
+         * Displays the successfully posted task on the page.
+         * @param {object} task - The posted task data.
+         */
+        function displayPostedTask(task) {
+            if (noTasksMessage) {
+                noTasksMessage.remove(); // Remove the initial "No tasks posted yet" message
+            }
+
+            const taskCard = document.createElement('div');
+            taskCard.className = 'bg-white p-6 rounded-xl shadow-lg border border-skinks-secondary/30 transition transform hover:shadow-xl hover:-translate-y-0.5';
+            taskCard.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-2xl font-bold text-skinks-primary">${task.title}</h3>
+                    <span class="px-3 py-1 text-sm font-medium rounded-full bg-skinks-accent text-white whitespace-nowrap">
+                        ${task.budget.type === 'Hourly Rate' ? '$' + task.budget.amount + '/hr' : '$' + task.budget.amount + ' (Fixed)'}
+                    </span>
+                </div>
+                <p class="text-gray-600 mb-4 line-clamp-3">${task.description}</p>
+                <div class="flex flex-wrap items-center text-sm text-gray-500 space-x-4">
+                    <div class="flex items-center space-x-1">
+                        <i data-lucide="tag" class="w-4 h-4 text-skinks-secondary"></i>
+                        <span>${task.category}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-skinks-secondary"></i>
+                        <span>${task.location}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <i data-lucide="clock" class="w-4 h-4 text-skinks-secondary"></i>
+                        <span>Posted: Just now</span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+                    <button class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        View Details (ID: ${task._id.substring(5, 12)}...)
+                    </button>
+                </div>
+            `;
+
+            // Prepend the new task so it shows at the top of the list
+            postedTasksList.prepend(taskCard);
+            
+            lucide.createIcons(); // Re-render Lucide icons inside the new card
+            
+            // Scroll to the new task list
+            document.getElementById('posted-tasks-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
     </script>
 </body>
 </html>
-
