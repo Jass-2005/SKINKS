@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skinks: Apply for Task</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Styles for Minimalist Form */
+        
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Focus styles matching Skinks theme */
+        input:focus, select:focus, textarea:focus {
+            border-color: #a78bfa !important;
+            box-shadow: 0 0 0 1px #a78bfa;
+        }
+    </style>
+    <!-- Firebase Libraries -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Enable debug logging for Firebase
+        setLogLevel('Debug');
+
+        // Global variables for Firebase setup
+        let db;
+        let auth;
+        let userId;
+        let isAuthReady = false;
+        
+        // --- MOCK TASK DATA (Replicating API Data) ---
+        const mockTasks = {
+            'T-123456': {
+                title: 'Fix Broken Fence Post',
+                description: 'A storm damaged one fence post in the backyard. Need a skilled carpenter to replace it and ensure the gate is aligned correctly. Materials will be provided by the homeowner. Requires basic tools.',
+                category: 'Home Repair',
+                location: '1.5 km away (Near Downtown)',
+                budget: '$120',
+                rateType: 'Fixed Price',
+                urgency: 'New Listing',
+                icon: 'wrench'
+            },
+            'T-123457': {
+                title: 'Need WordPress Cleanup & Speed Optimization',
+                description: 'My small business WordPress site is running slow and needs performance tuning. Tasks include optimizing images, clearing cache, running a security check, and updating plugins. Requires remote access.',
+                category: 'Digital/Tech',
+                location: 'Remote (2.8 km proximity)',
+                budget: '$35',
+                rateType: 'Per Hour',
+                urgency: 'URGENT',
+                icon: 'layout-grid'
+            },
+            // Fallback task if ID is missing or invalid
+            'FALLBACK': {
+                title: 'Task Details Missing',
+                description: 'We could not retrieve details for this task ID. Please return to the Find Talent page and select a valid listing.',
+                category: 'N/A',
+                location: 'N/A',
+                budget: 'N/A',
+                rateType: 'N/A',
+                urgency: 'Error',
+                icon: 'alert-triangle'
+            }
+        };
+
+        // Function to extract task ID from URL and render details
+        function renderTaskDetails() {
+            const params = new URLSearchParams(window.location.search);
+            // MODIFICATION: Default to T-123456 if taskid is not in URL
+            const taskId = params.get('taskid') || 'T-123456'; 
+            
+            const taskData = mockTasks[taskId] || mockTasks['FALLBACK'];
+
+            const header = document.getElementById('task-header');
+            const detailsContainer = document.getElementById('task-details-card');
+            const formContainer = document.getElementById('application-container');
+            const formWrapper = document.getElementById('application-wrapper');
+
+            // Handle Task Not Found (only if it defaults to FALLBACK)
+            if (taskData.title === mockTasks.FALLBACK.title) {
+                header.innerHTML = `<h1 class="text-4xl sm:text-5xl font-extrabold text-red-600 tracking-tight mb-2">Task Not Found</h1>
+                                    <p class="text-lg text-gray-500 font-medium">Please verify the link and try again.</p>`;
+                detailsContainer.innerHTML = `<p class="p-8 text-center text-gray-700">The requested task details are unavailable.</p>`;
+                formWrapper.classList.add('hidden'); // Hide form if task is not found
+                return taskData;
+            }
+
+            // Update Header
+            header.innerHTML = `
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
+                    Apply for: ${taskData.title}
+                </h1>
+                <p class="text-lg text-skinks-accent font-medium">Task ID: #${taskId}</p>
+            `;
+
+            // Render Task Details Card
+            detailsContainer.innerHTML = `
+                <h2 class="text-2xl font-bold text-skinks-primary mb-6 flex items-center">
+                    <i data-lucide="${taskData.icon}" class="w-6 h-6 mr-3"></i> Task Details
+                </h2>
+                
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Description</p>
+                        <p class="text-gray-800 mt-1">${taskData.description}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Proposed Rate</p>
+                        <p class="text-3xl font-extrabold text-skinks-primary mt-1">${taskData.budget} <span class="text-base text-gray-600 font-normal">${taskData.rateType}</span></p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Location & Category</p>
+                        <p class="text-gray-800 mt-1 flex items-center text-sm"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> ${taskData.location}</p>
+                        <p class="text-gray-800 flex items-center text-sm"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> ${taskData.category}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Update hidden form fields
+            document.querySelector('input[name="task-id"]').value = taskId;
+            document.querySelector('input[name="task-title"]').value = taskData.title;
+
+            // Re-render icons after adding new HTML content
+            lucide.createIcons();
+            
+            return taskData;
+        }
+
+        // --- FIREBASE & APP LOGIC ---
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const formWrapper = document.getElementById('application-wrapper');
+
+            // 1. Render Task Details First
+            const task = renderTaskDetails();
+            
+            if (task.title === mockTasks.FALLBACK.title) {
+                loadingIndicator.classList.add('hidden');
+                return; // Stop execution if task is invalid
+            }
+            
+            // Apply scroll-reveal effect to main content once details are rendered
+            document.querySelectorAll('.scroll-reveal').forEach(el => el.classList.add('visible'));
+
+
+            // 2. Initialize Firebase and Auth
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+                if (!firebaseConfig || !Object.keys(firebaseConfig).length) {
+                    throw new Error("Firebase configuration is missing or invalid.");
+                }
+
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Authenticate the user
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                isAuthReady = true;
+
+                console.log(`Firebase Initialized. User ID: ${userId}`);
+
+                // Attach submit handler after initialization
+                document.getElementById('application-form').addEventListener('submit', submitApplication);
+                
+                // Hide loading and show form wrapper
+                loadingIndicator.classList.add('hidden');
+                formWrapper.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Firebase Initialization or Authentication Error:", error);
+                loadingIndicator.innerHTML = `<p class="text-red-600">Error loading secure form. Authentication failed or configuration missing.</p>`;
+            }
+        });
+
+        // Function to handle form submission (Application to Firestore)
+        async function submitApplication(event) {
+            event.preventDefault();
+            
+            if (!isAuthReady) {
+                alertUser('error', 'Authentication not ready. Please wait a moment.');
+                return;
+            }
+
+            const submitButton = document.getElementById('submit-button');
+            submitButton.textContent = 'Submitting...';
+            submitButton.disabled = true;
+
+            const form = event.target;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+            // Gather form data
+            const applicationData = {
+                taskId: form.elements['task-id'].value,
+                taskTitle: form.elements['task-title'].value,
+                applicantId: userId,
+                proposedRate: form.elements['proposed-rate'].value,
+                rateType: form.elements['rate-type'].value,
+                pitch: form.elements['pitch'].value,
+                availability: form.elements['availability'].value,
+                status: 'pending',
+                submittedAt: new Date().toISOString()
+            };
+
+            // Validation (minimal check)
+            if (!applicationData.proposedRate || !applicationData.pitch) {
+                alertUser('error', 'Please fill in your proposed rate and application pitch.');
+                submitButton.textContent = 'Apply Now';
+                submitButton.disabled = false;
+                return;
+            }
+
+            try {
+                // Firestore path: /artifacts/{appId}/public/data/applications
+                const applicationsCollection = collection(db, `artifacts/${appId}/public/data/applications`);
+                await addDoc(applicationsCollection, applicationData);
+
+                alertUser('success', `Application for "${applicationData.taskTitle}" submitted successfully!`);
+                form.reset(); // Clear the form on success
+                submitButton.textContent = 'Submitted!';
+                submitButton.classList.add('bg-green-500', 'hover:bg-green-500');
+            } catch (error) {
+                console.error("Error writing application to Firestore:", error);
+                alertUser('error', 'Failed to submit application. Please try again.');
+                submitButton.textContent = 'Apply Now';
+            } finally {
+                // Re-enable button if not successfully submitted
+                if (submitButton.textContent !== 'Submitted!') {
+                    submitButton.disabled = false;
+                }
+            }
+        }
+
+        // Custom function to display user alerts (replacing alert())
+        function alertUser(type, message) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+            alertBox.textContent = message;
+
+            if (type === 'success') {
+                alertBox.classList.add('bg-green-100', 'text-green-700');
+            } else if (type === 'error') {
+                alertBox.classList.add('bg-red-100', 'text-red-700');
+            } else {
+                 alertBox.classList.add('bg-blue-100', 'text-blue-700');
+            }
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Placeholder for navigation button
+        function handleJoinClick() {
+            alertUser('info', "Simulating Join/Login redirect...");
+        }
+
+        window.handleJoinClick = handleJoinClick;
+    </script>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation (Active link is Task Hub) -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
+                    <a href="Post-Task.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Task Hub</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
+                    <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Call to Action Button -->
+                <div class="hidden md:block">
+                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task HubTask Hub</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Task Application Main Section -->
+    <main class="py-12 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Back Button -->
+        <a href="Post-Task .html" class="text-sm font-semibold text-skinks-secondary hover:text-skinks-primary flex items-center mb-8 transition duration-150">
+            <i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i> Back to Task Listings
+        </a>
+
+        <!-- Task Header (Dynamic) -->
+        <header id="task-header" class="text-center mb-10 scroll-reveal">
+            <!-- Content will be populated by renderTaskDetails() -->
+        </header>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" class="text-center p-10 bg-white rounded-xl shadow-lg border border-gray-100 scroll-reveal">
+            <div class="flex items-center justify-center space-x-2">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-skinks-primary"></div>
+                <span class="text-lg text-gray-600">Loading secure form...</span>
+            </div>
+        </div>
+
+        <!-- Submission Alert Box -->
+        <div id="alert-box" class="hidden p-4 rounded-lg text-sm mb-6 border font-medium"></div>
+
+        <!-- Task Details Card -->
+        <div id="task-details-card" class="bg-white p-8 md:p-10 rounded-xl shadow-lg border-2 border-skinks-secondary/20 mb-8 scroll-reveal">
+            <!-- Content will be populated by renderTaskDetails() -->
+        </div>
+
+        <!-- Application Form Wrapper (Hidden initially) -->
+        <div id="application-wrapper" class="hidden scroll-reveal">
+            <div id="application-container" class="bg-white p-8 md:p-10 rounded-xl shadow-2xl border border-gray-100">
+                <h2 class="text-2xl font-bold text-skinks-accent mb-6 flex items-center">
+                    <i data-lucide="send" class="w-6 h-6 mr-3"></i> Submit Your Application Pitch
+                </h2>
+
+                <form id="application-form" class="space-y-6">
+                    <!-- Hidden Task Data (Dynamic) -->
+                    <input type="hidden" name="task-id" value="">
+                    <input type="hidden" name="task-title" value="">
+
+                    <!-- Proposed Rate/Price -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="col-span-1 sm:col-span-2">
+                            <label for="proposed-rate" class="block text-sm font-medium text-gray-700 mb-1">Your Proposed Rate/Price ($)</label>
+                            <div class="relative rounded-lg shadow-sm">
+                                <input type="number" id="proposed-rate" name="proposed-rate" placeholder="e.g., 120" required 
+                                    class="w-full pl-3 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-skinks-secondary focus:border-skinks-secondary transition text-gray-900 bg-gray-50">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="rate-type" class="block text-sm font-medium text-gray-700 mb-1">Rate Type</label>
+                            <select id="rate-type" name="rate-type" required 
+                                class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-skinks-secondary focus:border-skinks-secondary transition text-gray-900 bg-gray-50 appearance-none">
+                                <option value="Fixed Price">Fixed Price</option>
+                                <option value="Per Hour">Per Hour</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Personal Pitch / Cover Letter -->
+                    <div>
+                        <label for="pitch" class="block text-sm font-medium text-gray-700 mb-1">Your Pitch / Why you're the right person</label>
+                        <textarea id="pitch" name="pitch" rows="6" required 
+                            placeholder="e.g., I have 10 years of carpentry experience and can finish this by tonight. I have all the tools necessary."
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-skinks-secondary focus:border-skinks-secondary transition text-gray-900 bg-gray-50"></textarea>
+                        <p class="mt-2 text-xs text-gray-500">Highlight your experience and confirm your capability for this specific task.</p>
+                    </div>
+
+                    <!-- Availability -->
+                    <div>
+                        <label for="availability" class="block text-sm font-medium text-gray-700 mb-1">Availability</label>
+                        <input type="text" id="availability" name="availability" placeholder="e.g., Available tomorrow after 2 PM" required 
+                            class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-skinks-secondary focus:border-skinks-secondary transition text-gray-900 bg-gray-50">
+                        <p class="mt-2 text-xs text-gray-500">When can you start and finish the job?</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button id="submit-button" type="submit" class="w-full px-6 py-4 bg-skinks-accent text-white font-bold rounded-lg shadow-lg hover:bg-pink-600 transition duration-300 transform hover:scale-[1.005]">
+                            Apply Now
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <!-- Logo/Brand -->
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
+                <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
+                <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
+            </div>
+            <!-- Site Map -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                </ul>
+            </div>
+            <!-- Resources -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
+                </ul>
+            </div>
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
+                <p class="text-gray-400 text-sm">Email: support@skinks.com</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript for Mobile Menu and Icon Rendering -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // 1. Mobile Menu Toggle Logic
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

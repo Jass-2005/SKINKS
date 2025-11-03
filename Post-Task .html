@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post a Task | Skinks: Define Your Local Need</title>
+    <title>Skinks: Task Hub</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
@@ -27,7 +27,7 @@
         }
     </script>
     <style>
-        /* Custom Styles for Post Task Page */
+        /* Custom Styles and Animations */
         
         /* Custom scrollbar for aesthetic */
         ::-webkit-scrollbar {
@@ -41,35 +41,19 @@
             background: #f9fafb;
         }
 
-        /* Scroll Reveal Transition Class */
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        /* Card Hover Effect - Minimalist and Sophisticated */
+        .task-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+            border: 1px solid transparent; /* Ensure border is consistent */
         }
-
-        .scroll-reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Input transition */
-        input, select, textarea {
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Loading spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .task-card:hover {
+            /* Subtle lift and a primary color shadow/border */
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(109, 40, 217, 0.15);
+            border: 1px solid rgba(109, 40, 217, 0.2);
         }
     </style>
 </head>
@@ -83,12 +67,11 @@
                 <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
                     Skinks
                 </a>
-                <!-- Desktop Navigation -->
+                <!-- Desktop Navigation (Active link is Task Hub) -->
                 <nav class="hidden md:flex space-x-6">
                     <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
                     <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
-                    <!-- Active Link -->
-                    <a href="Post-Task .html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Post Task</a>
+                    <a href="Post-Task.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Task Hub</a>
                     <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
@@ -110,7 +93,7 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
                 <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
-                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Post Task</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task Hub</a>
                 <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
@@ -121,138 +104,64 @@
         </div>
     </header>
 
-    <!-- Main Content Area: Post Task Form -->
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="scroll-reveal">
-            <h1 class="text-4xl font-extrabold text-skinks-primary mb-2">Post a New Task</h1>
-            <p class="text-xl text-gray-600 mb-8">Tell us what you need done locally, and we'll connect you with nearby talent.</p>
-        </div>
+    <!-- Task Hub Content Section -->
+    <main class="py-16 sm:py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="text-center mb-16">
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-3">
+                The Skinks Task Hub
+            </h1>
+            <p class="text-xl text-gray-500 max-w-4xl mx-auto font-light">
+                Are you looking to earn or looking for a helping hand? Choose your path below.
+            </p>
+        </header>
 
-        <div class="bg-white p-6 sm:p-10 rounded-xl shadow-2xl scroll-reveal">
-            <!-- Form -->
-            <form id="post-task-form">
+        <!-- Two Choice Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+            <!-- Card 1: Worker - Find Tasks -->
+            <a href="findjob.html" class="task-card p-8 bg-white rounded-2xl shadow-xl hover:shadow-2xl transition duration-300 group">
                 
-                <!-- Section 1: Task Details -->
-                <div class="mb-8 p-6 bg-skinks-background rounded-lg border-l-4 border-skinks-accent">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-4">
-                        <i data-lucide="clipboard-list" class="w-6 h-6 mr-2 text-skinks-accent"></i>
-                        What is the Task?
-                    </h2>
-                    
-                    <!-- Task Title -->
-                    <div class="mb-4">
-                        <label for="task-title" class="block text-sm font-medium text-gray-700 mb-1">Task Title (Be specific!)</label>
-                        <input type="text" id="task-title" placeholder="e.g., Fix broken ceiling fan in living room" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary">
-                    </div>
-
-                    <!-- Skill Category -->
-                    <div class="mb-4">
-                        <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Required Skill Category</label>
-                        <select id="category" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary appearance-none bg-white">
-                            <option value="" disabled selected>Select a category...</option>
-                            <option value="Tutor">Tutoring & Education</option>
-                            <option value="Tech">Tech Support & Web</option>
-                            <option value="Home">Home Repair & Services (Plumbing, Electrician, etc.)</option>
-                            <option value="Creative">Creative (Design, Photo, Video)</option>
-                            <option value="Fitness">Fitness & Wellness</option>
-                            <option value="Other">General / Other Local Tasks</option>
-                        </select>
-                    </div>
-
-                    <!-- Task Description -->
-                    <div>
-                        <label for="task-description" class="block text-sm font-medium text-gray-700 mb-1">Full Description of the Job</label>
-                        <textarea id="task-description" rows="5" placeholder="Include details like required tools, timing, specific problem, etc." required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary"></textarea>
-                    </div>
+                <div class="p-4 inline-flex rounded-full bg-skinks-primary/10 text-skinks-primary mb-6">
+                    <i data-lucide="briefcase" class="w-10 h-10"></i>
                 </div>
-
-                <!-- Section 2: Location and Timing -->
-                <div class="mb-8 p-6 bg-skinks-background rounded-lg border-l-4 border-skinks-accent">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-4">
-                        <i data-lucide="map-pin" class="w-6 h-6 mr-2 text-skinks-accent"></i>
-                        When and Where?
-                    </h2>
-
-                    <!-- Location Type -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
-                        <div class="flex space-x-4">
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="location-type" value="In-Person" class="text-skinks-primary focus:ring-skinks-primary" checked>
-                                <span class="ml-2 text-gray-700">In-Person (Physical location)</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="location-type" value="Virtual" class="text-skinks-primary focus:ring-skinks-primary">
-                                <span class="ml-2 text-gray-700">Virtual (Online/Remote)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Preferred Start Date -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="mb-4">
-                            <label for="start-date" class="block text-sm font-medium text-gray-700 mb-1">Preferred Start Date</label>
-                            <input type="date" id="start-date" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary">
-                        </div>
-                        
-                        <!-- Estimated Duration -->
-                        <div class="mb-4">
-                            <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Estimated Duration</label>
-                            <select id="duration" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary appearance-none bg-white">
-                                <option value="" disabled selected>Select duration...</option>
-                                <option value="1-3h">1 - 3 Hours (Micro-task)</option>
-                                <option value="4-8h">Half Day / Full Day</option>
-                                <option value="1-week">1 Week (Short Project)</option>
-                                <option value="Ongoing">Ongoing / Recurring</option>
-                            </select>
-                        </div>
-                    </div>
+                
+                <h2 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-skinks-primary transition duration-150">
+                    For the Worker: Find Tasks
+                </h2>
+                
+                <p class="text-gray-600 mb-8 font-light">
+                    Browse available tasks, projects, and micro-jobs posted by your neighbors within the 5km radius. Start earning today with local, flexible work.
+                </p>
+                
+                <div class="w-full px-6 py-3 bg-skinks-primary text-white font-semibold rounded-lg shadow-md hover:bg-skinks-secondary transition duration-300 text-center">
+                    Browse Available Tasks
                 </div>
+            </a>
 
-                <!-- Section 3: Budget and Contact -->
-                <div class="mb-8 p-6 bg-skinks-background rounded-lg border-l-4 border-skinks-accent">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-4">
-                        <i data-lucide="indian-rupee" class="w-6 h-6 mr-2 text-skinks-accent"></i>
-                        Budget & Agreement
-                    </h2>
-                    
-                    <!-- Budget Type -->
-                    <div class="mb-4">
-                        <label for="budget-type" class="block text-sm font-medium text-gray-700 mb-1">Budget Type</label>
-                        <select id="budget-type" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary appearance-none bg-white">
-                            <option value="Fixed">Fixed Price (One-time project)</option>
-                            <option value="Hourly">Hourly Rate (Ongoing work)</option>
-                        </select>
-                    </div>
-
-                    <!-- Budget Amount -->
-                    <div class="mb-6">
-                        <label for="budget-amount" class="block text-sm font-medium text-gray-700 mb-1">Your Budget (INR / ₹)</label>
-                        <div class="relative">
-                            <i data-lucide="indian-rupee" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                            <input type="number" id="budget-amount" placeholder="e.g., 500 for a micro-task, 5000 for a fixed project" required min="100" class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-skinks-primary focus:border-skinks-primary">
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Local rates typically range from ₹300/hr to ₹800/hr depending on skill.</p>
-                    </div>
+            <!-- Card 2: Customer - Post a Job -->
+            <a href="newtask.html" class="task-card p-8 bg-white rounded-2xl shadow-xl hover:shadow-2xl transition duration-300 group">
+                
+                <div class="p-4 inline-flex rounded-full bg-skinks-accent/10 text-skinks-accent mb-6">
+                    <i data-lucide="user-plus" class="w-10 h-10"></i>
                 </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="submit-button" class="w-full p-4 bg-skinks-accent text-white text-xl font-bold rounded-xl shadow-lg hover:bg-pink-600 transition duration-300 transform hover:scale-[1.01] flex items-center justify-center space-x-2">
-                    <span id="submit-text">Post Task and Find Nearby Talent</span>
-                    <div id="submit-spinner" class="spinner hidden"></div>
-                </button>
-            </form>
-        </div>
-
-        <!-- Safety Notice -->
-        <div class="mt-8 p-4 text-center text-sm text-gray-500 bg-white rounded-lg shadow-md border-t-2 border-skinks-secondary">
-            <i data-lucide="shield" class="w-4 h-4 inline mr-1"></i>
-            All tasks are posted anonymously until you accept an offer. Chat privately to ensure safety and agree on terms.
+                
+                <h2 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-skinks-accent transition duration-150">
+                    For the Customer: Post a Job
+                </h2>
+                
+                <p class="text-gray-600 mb-8 font-light">
+                    Describe the specific skill or task you need help with. Get immediate, competitive offers from **verified local talent** in your area.
+                </p>
+                
+                <div class="w-full px-6 py-3 bg-skinks-accent text-white font-semibold rounded-lg shadow-md hover:bg-pink-600 transition duration-300 text-center">
+                    Post a New Task/Job
+                </div>
+            </a>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12 mt-12 scroll-reveal">
+    <footer class="bg-gray-800 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
             
             <!-- Logo/Brand -->
@@ -266,9 +175,9 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="find_talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
-                    <li><a href="post_task.html" class="hover:text-skinks-accent transition duration-150">Post Task</a></li>
-                    <li><a href="how_it_works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
                     <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
                 </ul>
             </div>
@@ -277,7 +186,7 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="about_us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
@@ -296,220 +205,26 @@
         </div>
     </footer>
 
-    <!-- Custom Alert Message Box -->
-    <div id="custom-alert" class="fixed top-4 right-4 z-[100] p-4 bg-skinks-accent text-white rounded-lg shadow-xl opacity-0 transition-all duration-300 transform translate-x-10">
-        <!-- Message will be injected here -->
-    </div>
+    <!-- JavaScript for Mobile Menu, Icon Rendering, and Placeholders -->
+    <script>
+        // Initialize Lucide icons
+        window.onload = () => {
+             lucide.createIcons();
+        };
 
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, 
-            signInAnonymously, 
-            signInWithCustomToken, 
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, 
-            doc, 
-            addDoc, 
-            setDoc, 
-            collection,
-            serverTimestamp,
-            setLogLevel
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Mobile Menu Toggle Logic
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-        // --- Global Variables ---
-        let app, db, auth;
-        let userId = null; // Store the user's ID
-        
-        // --- MANDATORY Canvas Environment Variables ---
-        // DO NOT PROMPT USER FOR THESE
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // Enable debug logging for Firestore
-        setLogLevel('debug');
-
-        // --- Firebase Initialization ---
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            console.log("Firebase initialized successfully.");
-
-            // Authenticate the user
-            authenticateUser();
-
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            alertMessage("Error: Could not connect to the database.", true);
-        }
-
-        // --- Authentication Function ---
-        async function authenticateUser() {
-            try {
-                if (initialAuthToken) {
-                    console.log("Authenticating with custom token...");
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    console.log("No custom token found, authenticating anonymously...");
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Authentication failed:", error);
-                alertMessage("Authentication error. Please refresh.", true);
-            }
-
-            // Listen for auth state changes to get the user ID
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    userId = user.uid;
-                    console.log(`User authenticated. UID: ${userId}`);
-                } else {
-                    userId = null;
-                    console.log("User is signed out.");
-                }
-            });
-        }
-
-        // --- Initialize Page Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Lucide icons
-            lucide.createIcons();
-
-            // 1. Mobile Menu Toggle Logic
-            const menuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (menuButton && mobileMenu) {
-                menuButton.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
-
-            // 3. Scroll Reveal Animation Logic (Intersection Observer)
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1
-            };
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-            document.querySelectorAll('.scroll-reveal').forEach(section => {
-                observer.observe(section);
-            });
-
-            // 4. Form Submission Logic
-            const taskForm = document.getElementById('post-task-form');
-            if (taskForm) {
-                taskForm.addEventListener('submit', handleFormSubmit);
-            }
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
         });
 
-        // --- Core Application Functions ---
-
-        // 2. Placeholder for Join/Login (sends back to index for now)
-        window.handleJoinClick = function() {
-            console.log("Join Clicked: Redirecting to Home.");
-            window.location.href = 'index.html';
+        // Placeholder for Join/Login
+        function handleJoinClick() {
+            console.log("Join Clicked: Simulated login redirect.");
         }
-
-        // 4. Form Submission Handler
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-
-            // Check if authenticated
-            if (!userId || !db) {
-                console.error("User not authenticated or DB not initialized.");
-                alertMessage("Error: Not connected. Please try again.", true);
-                return;
-            }
-
-            // Get UI elements for submission feedback
-            const submitButton = document.getElementById('submit-button');
-            const submitText = document.getElementById('submit-text');
-            const submitSpinner = document.getElementById('submit-spinner');
-
-            // Show loading state
-            submitButton.disabled = true;
-            submitText.classList.add('hidden');
-            submitSpinner.classList.remove('hidden');
-
-            try {
-                // Collect form data
-                const taskData = {
-                    title: document.getElementById('task-title').value,
-                    category: document.getElementById('category').value,
-                    description: document.getElementById('task-description').value,
-                    locationType: document.querySelector('input[name="location-type"]:checked').value,
-                    startDate: document.getElementById('start-date').value,
-                    duration: document.getElementById('duration').value,
-                    budgetType: document.getElementById('budget-type').value,
-                    budgetAmount: Number(document.getElementById('budget-amount').value),
-                    status: "open", // Default status
-                    postedAt: serverTimestamp(), // Use server timestamp
-                    posterId: userId
-                };
-
-                // Define the private collection path
-                // /artifacts/{appId}/users/{userId}/{your_collection_name}
-                const tasksCollectionPath = `/artifacts/${appId}/users/${userId}/tasks`;
-                
-                console.log(`Saving task to: ${tasksCollectionPath}`);
-                console.log("Task Data:", taskData);
-
-                // Add document to Firestore
-                const docRef = await addDoc(collection(db, tasksCollectionPath), taskData);
-
-                console.log("Document written with ID: ", docRef.id);
-                alertMessage(`Success! Your task is now live.`);
-                
-                // Reset form
-                event.target.reset();
-
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                alertMessage(`Error: Could not post task. ${error.message}`, true);
-            } finally {
-                // Hide loading state
-                submitButton.disabled = false;
-                submitText.classList.remove('hidden');
-                submitSpinner.classList.add('hidden');
-            }
-        }
-
-        // 5. Custom Non-Alert Message Box
-        function alertMessage(message, isError = false) {
-            const msgBox = document.getElementById('custom-alert');
-            if (!msgBox) return;
-
-            msgBox.textContent = message;
-            
-            // Clear previous styles
-            msgBox.classList.remove('bg-skinks-accent', 'bg-red-600', 'opacity-0', 'translate-x-10');
-            
-            // Apply new styles
-            msgBox.classList.add(isError ? 'bg-red-600' : 'bg-skinks-accent');
-            msgBox.classList.remove('opacity-0', 'translate-x-10');
-            msgBox.classList.add('opacity-100', 'translate-x-0');
-            
-            // Hide after 3 seconds
-            setTimeout(() => {
-                msgBox.classList.remove('opacity-100', 'translate-x-0');
-                msgBox.classList.add('opacity-0', 'translate-x-10');
-            }, 3000);
-        }
-
+        window.handleJoinClick = handleJoinClick;
     </script>
 </body>
 </html>
-

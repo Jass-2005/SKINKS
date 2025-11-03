@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skinks: Post a New Task</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+        /* Custom focus styles for minimal inputs */
+        .form-input-minimal {
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-input-minimal:focus {
+            border-color: #f472b6; /* Skinks Accent */
+            box-shadow: 0 0 0 2px rgba(244, 114, 182, 0.2);
+            outline: none;
+        }
+
+        /* Custom message styling */
+        .message-box {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            display: none; /* Hidden by default */
+        }
+        .message-box.visible {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation (Active link is Task Hub) -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
+                    <a href="Post-Task.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Task Hub</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
+                    <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Call to Action Button -->
+                <div class="hidden md:block">
+                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task Hub</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content: Post Task Form -->
+    <main class="py-16 sm:py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Page Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+                Post a New Task
+            </h1>
+            <p class="text-xl text-gray-500 max-w-2xl mx-auto font-light">
+                Describe what you need done, and we'll connect you with verified local talent ready to help.
+            </p>
+        </header>
+
+        <!-- Submission Message Area -->
+        <div id="message-container" class="mb-6">
+            <!-- Dynamic success/error messages will be injected here -->
+        </div>
+
+        <!-- Task Form Container -->
+        <div id="task-form-container" class="bg-white p-8 sm:p-12 rounded-2xl shadow-xl border border-gray-100">
+            
+            <form id="new-task-form" class="space-y-8">
+
+                <!-- Section 1: Task Details -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-1">What needs to be done?</h2>
+                    <p class="text-gray-500 mb-6 font-light">Be specific so the right talent can find your job.</p>
+                    
+                    <div class="space-y-6">
+                        <!-- Task Title -->
+                        <div>
+                            <label for="task-title" class="block text-sm font-semibold text-gray-700 mb-2">Task Title</label>
+                            <input type="text" id="task-title" placeholder="e.g., Fix broken ceiling fan in living room" class="form-input-minimal w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400" required>
+                        </div>
+
+                        <!-- Skill Category -->
+                        <div>
+                            <label for="task-category" class="block text-sm font-semibold text-gray-700 mb-2">Skill Category</Vlabel>
+                            <select id="task-category" class="form-input-minimal w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 appearance-none" required>
+                                <option value="" disabled selected>Select a category...</option>
+                                <option value="Home Repair">Home Repair</option>
+                                <option value="Digital/Tech">Digital/Tech</option>
+                                <option value="Pet Care">Pet Care</option>
+                                <option value="Tutoring">Tutoring</option>
+                                <option value="Delivery/Errands">Delivery/Errands</option>
+                                <option value="Events">Events</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Full Description -->
+                        <div>
+                            <label for="task-description" class="block text-sm font-semibold text-gray-700 mb-2">Full Description of the Job</label>
+                            <textarea id="task-description" rows="5" placeholder="Include details like required tools, timing, specific problem, etc." class="form-input-minimal w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Budget & Location -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-1">Budget & Location</h2>
+                    <p class="text-gray-500 mb-6 font-light">Set your price and where the task will happen.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <!-- Budget Type -->
+                        <div class="sm:col-span-1">
+                            <label for="budget-type" class="block text-sm font-semibold text-gray-700 mb-2">Budget Type</label>
+                            <select id="budget-type" class="form-input-minimal w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 appearance-none" required>
+                                <option value="Fixed Price">Fixed Price</option>
+                                <option value="Hourly Rate">Hourly Rate</option>
+                            </select>
+                        </div>
+
+                        <!-- Budget Amount -->
+                        <div class="sm:col-span-2">
+                            <label for="budget-amount" class="block text-sm font-semibold text-gray-700 mb-2">Proposed Rate ($)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                                <input type="number" id="budget-amount" placeholder="120" class="form-input-minimal w-full pl-7 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400" required>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="sm:col-span-3">
+                            <label for="task-location" class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                            <input type="text" id="task-location" placeholder="e.g., 123 Main St, Your City (or 'Remote')" class="form-input-minimal w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Submission Button -->
+                <div class="pt-8 border-t border-gray-100">
+                    <button id="submit-button" type="submit" class="w-full sm:w-auto px-10 py-4 bg-skinks-accent text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-pink-600 transition duration-300 flex items-center justify-center">
+                        <span id="submit-button-text">Post Your Task</span>
+                        <i id="submit-spinner" data-lucide="loader-2" class="w-6 h-6 animate-spin hidden ml-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <!-- Logo/Brand -->
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
+                <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
+                <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
+            </div>
+            <!-- Site Map -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                </ul>
+            </div>
+            <!-- Resources -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
+                </ul>
+            </div>
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
+                <p class="text-gray-400 text-sm">Email: support@skinks.com</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 
+      JavaScript for Mobile Menu, Icon Rendering, 
+      and Mock API Submission Logic
+    -->
+    <script type="module">
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- Mobile Menu Toggle Logic ---
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Placeholder for Join/Login ---
+        window.handleJoinClick = function() {
+            console.log("Join Clicked: Placeholder for modal/redirect.");
+            const ctaButtons = document.querySelectorAll('button');
+            ctaButtons.forEach(button => {
+                if (button.textContent.includes("Join Now")) {
+                    const originalText = button.textContent;
+                    button.textContent = "Redirecting...";
+                    button.disabled = true;
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 1500);
+                }
+            });
+        }
+
+        // --- Form Submission Logic (Mock MongoDB API) ---
+        
+        // Get Form Elements
+        const taskForm = document.getElementById('new-task-form');
+        const submitButton = document.getElementById('submit-button');
+        const submitButtonText = document.getElementById('submit-button-text');
+        const submitSpinner = document.getElementById('submit-spinner');
+        const messageContainer = document.getElementById('message-container');
+
+        // Listen for form submission
+        taskForm.addEventListener('submit', handleTaskSubmission);
+
+        /**
+         * Handles the form submission event.
+         * Prevents default, validates, shows loading state, and calls mock API.
+         */
+        async function handleTaskSubmission(event) {
+            event.preventDefault(); // Stop form from reloading the page
+            
+            // --- 1. Collect Form Data ---
+            const taskTitle = document.getElementById('task-title').value;
+            const taskCategory = document.getElementById('task-category').value;
+            const taskDescription = document.getElementById('task-description').value;
+            const budgetType = document.getElementById('budget-type').value;
+            const budgetAmount = document.getElementById('budget-amount').value;
+            const taskLocation = document.getElementById('task-location').value;
+
+            // Simple validation
+            if (!taskTitle || !taskCategory || !taskDescription || !budgetAmount || !taskLocation) {
+                showMessage('Please fill out all required fields.', 'error');
+                return;
+            }
+
+            const taskData = {
+                title: taskTitle,
+                category: taskCategory,
+                description: taskDescription,
+                budget: {
+                    type: budgetType,
+                    amount: parseFloat(budgetAmount)
+                },
+                location: taskLocation,
+                status: 'new',
+                postedAt: new Date().toISOString(),
+                // In a real app, a userId would be attached here
+                // userId: 'user-123-abc' 
+            };
+            
+            // --- 2. Update UI to Loading State ---
+            setLoading(true);
+            showMessage(null); // Clear previous messages
+
+            // --- 3. Simulate API Call ---
+            try {
+                // This function simulates a call to your MongoDB API endpoint
+                const response = await mockApiCall(taskData);
+                
+                // Handle Success
+                showMessage(`Task "${response.title}" posted successfully!`, 'success');
+                taskForm.reset(); // Clear the form
+
+            } catch (error) {
+                // Handle Error
+                console.error("Mock API Error:", error.message);
+                showMessage(error.message, 'error');
+            } finally {
+                // --- 4. Reset UI from Loading State ---
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Simulates a POST request to a MongoDB backend API.
+         * @param {object} data - The task data payload.
+         */
+        function mockApiCall(data) {
+            console.log("Mock API Call: Sending data to /api/tasks...", data);
+            
+            // Return a promise that simulates network delay (1.5 seconds)
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate a potential server-side error
+                    if (data.title.toLowerCase().includes("fail")) {
+                        reject(new Error("Mock API Error: Invalid task title."));
+                    } else {
+                        // Simulate a successful response from the server
+                        // The server would typically return the created document with its new _id
+                        const responseData = {
+                            _id: 'mongo-' + Math.random().toString(36).substr(2, 9),
+                            ...data
+                        };
+                        console.log("Mock API Success:", responseData);
+                        resolve(responseData);
+                    }
+                }, 1500);
+            });
+        }
+
+        /**
+         * Toggles the loading state of the submission button.
+         * @param {boolean} isLoading - Whether to show the loading state.
+         */
+        function setLoading(isLoading) {
+            if (isLoading) {
+                submitButton.disabled = true;
+                submitButtonText.textContent = 'Posting...';
+                submitSpinner.classList.remove('hidden');
+            } else {
+                submitButton.disabled = false;
+                submitButtonText.textContent = 'Post Your Task';
+                submitSpinner.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Displays a success or error message to the user.
+         * @param {string | null} message - The message to display, or null to hide.
+         * @param {'success' | 'error'} type - The type of message.
+         */
+        function showMessage(message, type = 'success') {
+            messageContainer.innerHTML = ''; // Clear existing messages
+            
+            if (!message) {
+                // Hide all messages if message is null
+                const existingBox = messageContainer.querySelector('.message-box');
+                if (existingBox) {
+                    existingBox.classList.remove('visible');
+                }
+                return;
+            }
+
+            // Define styles based on type
+            const isSuccess = type === 'success';
+            const bgColor = isSuccess ? 'bg-green-100' : 'bg-red-100';
+            const borderColor = isSuccess ? 'border-green-400' : 'border-red-400';
+            const textColor = isSuccess ? 'text-green-800' : 'text-red-800';
+            const icon = isSuccess ? 'check-circle' : 'alert-triangle';
+
+            // Create the message element
+            const messageEl = document.createElement('div');
+            messageEl.className = `message-box p-4 border-l-4 ${bgColor} ${borderColor} ${textColor} rounded-lg flex items-start space-x-3`;
+            
+            messageEl.innerHTML = `
+                <div>
+                    <i data-lucide="${icon}" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold">${isSuccess ? 'Success' : 'Error'}</h3>
+                    <p class="text-sm">${message}</p>
+                </div>
+            `;
+            
+            messageContainer.appendChild(messageEl);
+
+            lucide.createIcons(); // Re-render the icon we just added
+
+            // Force reflow to enable animation
+            void messageEl.offsetWidth;
+            
+            // Make it visible
+            messageEl.classList.add('visible');
+
+            // Scroll to the top to make the message visible
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+    </script>
+</body>
+</html>
+

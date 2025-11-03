@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skinks: Find Available Local Tasks</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Styles and Animations */
+        
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+        /* Scroll Reveal Transition Class */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Task Card Hover Effect - Minimalist Version */
+        .task-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            cursor: pointer;
+            /* Using a subtle, soft shadow by default */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+        }
+        .task-card:hover {
+            /* Subtle lift and a more pronounced but contained shadow */
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation (Active link is Find Talent) -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
+                    <a href="Post-Task.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Task Hub</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
+                    <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Call to Action Button -->
+                <div class="hidden md:block">
+                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task Hub</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                    Join Now
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Task Listing Content Section -->
+    <main class="py-8 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="text-center mb-16 scroll-reveal">
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">
+                Find Local Talent
+            </h1>
+            <p class="text-xl text-gray-500 max-w-4xl mx-auto font-light">
+                Secure short-term, high-quality work opportunities within your immediate community radius.
+            </p>
+        </header>
+
+        <!-- Minimalist Search and Filter Bar -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-16 border-t border-gray-100 scroll-reveal">
+            <form class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                
+                <!-- Search by Keyword (2 columns) -->
+                <div class="md:col-span-2">
+                    <label for="search" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">What are you looking for?</label>
+                    <div class="relative">
+                        <input type="search" id="search" placeholder="Enter skill, e.g., 'Plumbing', 'React', 'Gardening'" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-skinks-secondary focus:border-skinks-secondary transition text-gray-800 placeholder-gray-400">
+                        <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div>
+                    <label for="category" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Category</label>
+                    <select id="category" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-skinks-secondary focus:border-skinks-secondary transition appearance-none text-gray-800">
+                        <option>All Skills</option>
+                        <option>Home Repair</option>
+                        <option>Digital/Tech</option>
+                        <option>Pet Care</option>
+                        <option>Tutoring</option>
+                        <option>Delivery/Errands</option>
+                    </select>
+                </div>
+
+                <!-- Action Button -->
+                <div>
+                    <!-- The mt-7 and md:mt-0 ensures the button aligns properly on mobile vs desktop -->
+                    <button type="submit" class="w-full mt-7 md:mt-0 px-4 py-3 bg-skinks-primary text-white font-semibold rounded-lg shadow-md hover:bg-skinks-secondary transition duration-300">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Task Listings Grid -->
+        <div id="task-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Task Card 1: Home Repair (Fixed Price) -->
+            <a href="applynow.html" onclick="console.log('Task 1 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
+                
+                <!-- Task Header and Tags -->
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Fix Broken Fence Post</h2>
+                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-skinks-accent/10 text-skinks-accent">NEW</span>
+                </div>
+
+                <!-- Metadata Row (Minimalist) -->
+                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 1.5 km</span>
+                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Home Repair</span>
+                </div>
+                
+                <!-- Description -->
+                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
+                    A storm damaged one fence post in the backyard. Need someone to replace it and ensure the gate is aligned correctly. Materials will be provided.
+                </p>
+
+                <!-- Pricing and CTA -->
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="text-3xl font-extrabold text-skinks-primary">
+                        $120
+                        <span class="text-sm font-medium text-gray-500 block -mt-1">Fixed Price</span>
+                    </div>
+                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
+                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Task Card 2: Digital/Tech (Hourly Rate) -->
+            <a href="applynow.html" onclick="console.log('Task 2 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Need WordPress Cleanup</h2>
+                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-600">URGENT</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Remote (2.8 km)</span>
+                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Digital/Tech</span>
+                </div>
+                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
+                    My small business WordPress site is running slow. Need a local expert to optimize images, clear cache, and run a security check.
+                </p>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="text-3xl font-extrabold text-skinks-accent">
+                        $35
+                        <span class="text-sm font-medium text-gray-500 block -mt-1">Per Hour</span>
+                    </div>
+                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
+                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Task Card 3: Pet Care (Fixed Price) -->
+            <a href="applynow.html" onclick="console.log('Task 3 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Weekend Dog Sitting</h2>
+                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-skinks-accent/10 text-skinks-accent">NEW</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 0.9 km</span>
+                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Pet Care</span>
+                </div>
+                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
+                    Need a responsible person to watch a friendly cat and dog from Friday evening to Sunday afternoon. Must be comfortable administering oral meds.
+                </p>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="text-3xl font-extrabold text-skinks-primary">
+                        $150
+                        <span class="text-sm font-medium text-gray-500 block -mt-1">Fixed Price</span>
+                    </div>
+                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
+                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
+                    </span>
+                </div>
+            </a>
+
+             <!-- Task Card 4: Delivery/Errands (Hourly Rate) -->
+            <a href="applynow.html" onclick="console.log('Task 4 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Grocery Pickup & Delivery</h2>
+                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-600">TODAY</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 4.1 km</span>
+                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Delivery/Errands</span>
+                </div>
+                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
+                    Need someone with a car to pick up groceries from the local market (list provided) and drop them off at my apartment building.
+                </p>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="text-3xl font-extrabold text-skinks-accent">
+                        $22
+                        <span class="text-sm font-medium text-gray-500 block -mt-1">Per Hour</span>
+                    </div>
+                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
+                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
+                    </span>
+                </div>
+            </a>
+            
+             <!-- Task Card 5: Tutoring (Hourly Rate) -->
+            <a href="applynow.html" onclick="console.log('Task 5 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Spanish Language Help</h2>
+                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-skinks-accent/10 text-skinks-accent">NEW</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 2.8 km</span>
+                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Tutoring</span>
+                </div>
+                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
+                    Looking for conversational practice sessions for a beginner adult learner. Must be a native or fluent Spanish speaker.
+                </p>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="text-3xl font-extrabold text-skinks-accent">
+                        $30
+                        <span class="text-sm font-medium text-gray-500 block -mt-1">Per Hour</span>
+                    </div>
+                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
+                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Task Card 6: Home Repair (Fixed Price) -->
+            <a href="applynow.htmlss" onclick="console.log('Task 6 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Install Shelf Unit (IKEA)</h2>
+                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-600">TODAY</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 0.3 km</span>
+                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Home Repair</span>
+                </div>
+                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
+                    Need help assembling a large IKEA shelving unit in a home office. Must have basic tools (screwdrivers, level, etc.).
+                </p>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="text-3xl font-extrabold text-skinks-primary">
+                        $50
+                        <span class="text-sm font-medium text-gray-500 block -mt-1">Fixed Price</span>
+                    </div>
+                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
+                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
+                    </span>
+                </div>
+            </a>
+            
+        </div>
+        
+        <!-- Pagination/Load More Placeholder -->
+        <div class="text-center mt-16 scroll-reveal">
+            <button class="px-6 py-3 bg-skinks-secondary/20 text-skinks-primary font-semibold rounded-lg hover:bg-skinks-secondary/40 transition duration-300 flex items-center mx-auto">
+                <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i> Load More Tasks
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            
+            <!-- Logo/Brand -->
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-3xl font-bold text-skinks-accent mb-2">Skinks</h3>
+                <p class="text-gray-400 text-sm">Your Local Skill Marketplace.</p>
+                <p class="text-gray-500 text-xs mt-4">&copy; 2025 Skinks Innovations. All rights reserved.</p>
+            </div>
+
+            <!-- Site Map -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150"</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Contact</h4>
+                <p class="text-gray-400 text-sm">Email: support@skinks.com</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-skinks-accent transition duration-150"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- Core Application Logic ---
+
+        // 1. Mobile Menu Toggle Logic
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 2. Placeholder for Join/Login
+        function handleJoinClick() {
+            console.log("Join Clicked: Redirecting to Sign Up/Login Modal.");
+            const ctaButton = event.currentTarget;
+            const originalText = ctaButton.textContent;
+
+            // Simulate loading state
+            ctaButton.textContent = "Redirecting...";
+            ctaButton.disabled = true;
+
+            setTimeout(() => {
+                ctaButton.textContent = originalText;
+                ctaButton.disabled = false;
+                console.log("Simulated login redirect complete.");
+            }, 1500);
+        }
+
+        // 3. Scroll Reveal Animation Logic (Intersection Observer)
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null, 
+                rootMargin: '0px',
+                threshold: 0.1 
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.scroll-reveal').forEach(element => {
+                observer.observe(element);
+            });
+        });
+
+    </script>
+</body>
+</html>
