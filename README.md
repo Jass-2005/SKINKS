@@ -1,7 +1,7 @@
 # Skinks — Hyperlocal Skill Marketplace 🌍
 
 Skinks is a 6-page prototype website designed to bridge the **hyperlocal gap** between skilled individuals and nearby opportunities.  
-Built with **HTML, Tailwind CSS, and Firebase Firestore**, Skinks helps users **connect, collaborate, and earn** within a 5km radius.
+Built with **HTML, Tailwind CSS, and Mpngo DB, Skinks helps users **connect, collaborate, and earn** within a 5km radius.
 
 ---
 
