@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -76,13 +78,13 @@
                     <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
                     
                     <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
-                    <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
+                    <a href="Post-Task.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
                     <!-- Active Link -->
                     <a href="About-Us.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
                 </nav>
-                <!-- Call to Action Button -->
-                <div class="hidden md:block">
+                <!-- Auth Button Container -->
+                <div id="desktop-auth-container" class="hidden md:block">
                     <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
                         Join Now
                     </button>
@@ -100,12 +102,15 @@
                 <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
                 
                 <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
-                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
-                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                    Join Now
-                </button>
+                <!-- Mobile Auth Button Container -->
+                <div id="mobile-auth-container">
+                    <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -153,35 +158,47 @@
             </p>
         </div>
 
-        <!-- Team Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <!-- Team Grid (Updated to 4 columns) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             
-            <!-- Team Card: Jaspreet Singh -->
+            <!-- Team Card: Jaspreet Singh (Team Lead) -->
             <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal">
                 <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center mx-auto mb-4">
                     <i data-lucide="user-circle-2" class="w-24 h-24 text-skinks-secondary"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900">Jaspreet Singh</h3>
-                <p class="text-skinks-primary font-semibold text-lg mb-2">Team Lead & Frontend Architect</p>
+                <p class="text-skinks-primary font-semibold text-lg mb-2">Team Lead & Core Architect</p>
                 <p class="text-gray-600 text-sm">
-                    Jaspreet the project vision and integration, architecting the seamless, responsive user interface that brings Skinks to life.
+                    Jaspreet defined the core idea and architecture, leading development on the AI chatbot and overall system design.
                 </p>
             </div>
 
-            <!-- Team Card: Aryan -->
+            <!-- Team Card: Jaspreet Singh (Frontend/Backend) -->
             <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal" style="transition-delay: 200ms;">
+                <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="user-circle-2" class="w-24 h-24 text-skinks-secondary"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900">Jaspreet Singh</h3>
+                <p class="text-skinks-primary font-semibold text-lg mb-2">Frontend & Backend Developer</p>
+                <p class="text-gray-600 text-sm">
+                    Jaspreet developed key features for the Skinks platform, implementing the frontend user interface and the backend server logic.
+                </p>
+            </div>
+
+            <!-- Team Card: Aryan (Updated) -->
+            <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal" style="transition-delay: 400ms;">
                 <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center mx-auto mb-4">
                     <i data-lucide="user-circle-2" class="w-24 h-24 text-skinks-secondary"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900">Aryan</h3>
                 <p class="text-skinks-primary font-semibold text-lg mb-2">User Interface & Database</p>
                 <p class="text-gray-600 text-sm">
-                    Aryan designs the chidi shakkka intuitive user journey and manages the database, ensuring our philosophy of "simplicity and speed" is a reality.
+                    Aryan designs the intuitive user journey and manages the database, ensuring our philosophy of "simplicity and speed" is a reality.
                 </p>
             </div>
 
             <!-- Team Card: Vanshaj Sharma -->
-            <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal" style="transition-delay: 400ms;">
+            <div class="team-card bg-white p-8 rounded-xl shadow-lg text-center scroll-reveal" style="transition-delay: 600ms;">
                 <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center mx-auto mb-4">
                     <i data-lucide="user-circle-2" class="w-24 h-24 text-skinks-secondary"></i>
                 </div>
@@ -191,6 +208,7 @@
                     Vanshaj is the architect of our robust backend, building the Node.js + Express API that handles all the logic, matching, and data management.
                 </p>
             </div>
+
         </div>
 
     </main>
@@ -211,7 +229,7 @@
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
                     <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
-                    <li><a href="Post-Task .html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
                     <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
                     <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
                 </ul>
@@ -240,6 +258,76 @@
         </div>
     </footer>
 
+    <!-- Supabase Auth Logic -->
+    <script type="module">
+        // Import Supabase client
+        const { createClient } = supabase;
+
+        // --- UI Element Selectors ---
+        const desktopAuthContainer = document.getElementById('desktop-auth-container');
+        const mobileAuthContainer = document.getElementById('mobile-auth-container');
+
+        // --- Supabase Credentials ---
+        const supabaseUrl = "https://zmfnuocezvjwebugnydw.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs";
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        // --- Helper Function ---
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(' ');
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        // --- Auth State Change Handler ---
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+                // User is logged in
+                const user = session.user;
+                const name = user.user_metadata?.full_name || 'User';
+                const initials = getInitials(name);
+
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="w-10 h-10 bg-skinks-primary text-white flex items-center justify-center rounded-full font-semibold text-sm hover:bg-skinks-secondary transition-colors duration-200" title="My Profile">
+                            ${initials}
+                        </a>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">
+                            My Profile
+                        </a>
+                    `;
+                }
+            } else {
+                // User is logged out
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+            }
+            lucide.createIcons(); // Re-render icons if any were added
+        });
+    </script>
+
+
     <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
     <script>
         // Initialize Lucide icons
@@ -255,11 +343,14 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        // 2. Placeholder for Join/Login (sends back to index for now)
+        // 2. Placeholder for Join/Login (sends back to login page)
         function handleJoinClick() {
-            console.log("Join Clicked: Redirecting to Home.");
-            window.location.href = 'index.html';
+            console.log("Join Clicked: Redirecting to Login.");
+            window.location.href = 'login.html';
         }
+        // Make it globally accessible for the onclick attribute
+        window.handleJoinClick = handleJoinClick;
+
 
         // 3. Scroll Reveal Animation Logic (Intersection Observer)
         const observerOptions = {
@@ -284,3 +375,4 @@
     </script>
 </body>
 </html>
+

@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -82,8 +84,8 @@
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
                 </nav>
-                <!-- Call to Action Button -->
-                <div class="hidden md:block">
+                <!-- Call to Action Button Container -->
+                <div id="desktop-auth-container" class="hidden md:block">
                     <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
                         Join Now
                     </button>
@@ -103,9 +105,12 @@
                 <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
-                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                    Join Now
-                </button>
+                <!-- Mobile Auth Button Container -->
+                <div id="mobile-auth-container">
+                    <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -262,41 +267,21 @@
     </footer>
 
     <!-- 
-      JavaScript for Mobile Menu, Icon Rendering, 
-      and Task Submission Logic
+        JavaScript for Mobile Menu, Icon Rendering, 
+        and Task Submission Logic
     -->
     <script type="module">
+        // Import Supabase client
+        const { createClient } = supabase;
+
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // --- Mobile Menu Toggle Logic ---
+        // --- UI Element Selectors ---
         const menuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-
-        menuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // --- Placeholder for Join/Login ---
-        window.handleJoinClick = function() {
-            console.log("Join Clicked: Placeholder for modal/redirect.");
-            const ctaButtons = document.querySelectorAll('button');
-            ctaButtons.forEach(button => {
-                if (button.textContent.includes("Join Now")) {
-                    const originalText = button.textContent;
-                    button.textContent = "Redirecting...";
-                    button.disabled = true;
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false;
-                    }, 1500);
-                }
-            });
-        }
-
-        // --- Form Submission Logic (Mock MongoDB API) ---
-        
-        // Get Form Elements
+        const desktopAuthContainer = document.getElementById('desktop-auth-container');
+        const mobileAuthContainer = document.getElementById('mobile-auth-container');
         const taskForm = document.getElementById('new-task-form');
         const submitButton = document.getElementById('submit-button');
         const submitButtonText = document.getElementById('submit-button-text');
@@ -305,16 +290,92 @@
         const postedTasksList = document.getElementById('posted-tasks-list');
         const noTasksMessage = document.getElementById('no-tasks-message');
 
+        // --- Supabase Credentials ---
+        const supabaseUrl = "https://zmfnuocezvjwebugnydw.supabase.co";
+        // ⚠️ FIXED THE API KEY
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs";
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+
+        // --- Helper Function ---
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(' ');
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        // --- Auth State Change Handler ---
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+                // User is logged in
+                const user = session.user;
+                const name = user.user_metadata?.full_name || 'User';
+                const initials = getInitials(name);
+
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="w-10 h-10 bg-skinks-primary text-white flex items-center justify-center rounded-full font-semibold text-sm hover:bg-skinks-secondary transition-colors duration-200" title="My Profile">
+                            ${initials}
+                        </a>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">
+                            My Profile
+                        </a>
+                    `;
+                }
+            } else {
+                // User is logged out
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+            }
+            lucide.createIcons();
+        });
+
+
+        // --- Mobile Menu Toggle Logic ---
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Form Submission Logic (Using Supabase) ---
+        
         // Listen for form submission
         taskForm.addEventListener('submit', handleTaskSubmission);
 
         /**
          * Handles the form submission event.
-         * Prevents default, validates, shows loading state, and calls mock API.
          */
         async function handleTaskSubmission(event) {
-            event.preventDefault(); // Stop form from reloading the page
-            
+            event.preventDefault();
+
+            // Check if user is logged in
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                showMessage("You must be logged in to post a task. Redirecting...", 'error');
+                setTimeout(() => { window.location.href = 'login.html' }, 2000);
+                return;
+            }
+
             // --- 1. Collect Form Data ---
             const taskTitle = document.getElementById('task-title').value;
             const taskCategory = document.getElementById('task-category').value;
@@ -323,7 +384,6 @@
             const budgetAmount = document.getElementById('budget-amount').value;
             const taskLocation = document.getElementById('task-location').value;
 
-            // Simple validation
             if (!taskTitle || !taskCategory || !taskDescription || !budgetAmount || !taskLocation) {
                 showMessage('Please fill out all required fields.', 'error');
                 return;
@@ -333,66 +393,48 @@
                 title: taskTitle,
                 category: taskCategory,
                 description: taskDescription,
-                budget: {
-                    type: budgetType,
-                    amount: parseFloat(budgetAmount)
-                },
+                budget_amount: parseFloat(budgetAmount),
                 location: taskLocation,
                 status: 'new',
-                postedAt: new Date().toISOString(),
-                // In a real app, a userId would be attached here
-                // userId: 'user-123-abc' 
+                posted_at: new Date().toISOString(),
+                user_id: user.id // Link the task to the logged-in user
             };
-            
+
             // --- 2. Update UI to Loading State ---
             setLoading(true);
             showMessage(null); // Clear previous messages
 
-            // --- 3. Simulate API Call ---
+            // --- 3. Save to Supabase ---
             try {
-                // This function simulates a call to your MongoDB API endpoint
-                const response = await mockApiCall(taskData);
+                const response = await saveTaskToSupabase(taskData);
                 
-                // Handle Success
                 showMessage(`Task "${response.title}" posted successfully!`, 'success');
-                displayPostedTask(response); // <--- Display the posted task
+                displayPostedTask(response); // Display the posted task
                 taskForm.reset(); // Clear the form
 
             } catch (error) {
-                // Handle Error
-                console.error("Mock API Error:", error.message);
+                console.error("Supabase Error:", error.message);
                 showMessage(error.message, 'error');
             } finally {
                 // --- 4. Reset UI from Loading State ---
                 setLoading(false);
             }
         }
-
+        
         /**
-         * Simulates a POST request to a MongoDB backend API.
-         * @param {object} data - The task data payload.
+         * Inserts a new task into Supabase
+         * @param {object} data - The task data payload
          */
-        function mockApiCall(data) {
-            console.log("Mock API Call: Sending data to /api/tasks...", data);
-            
-            // Return a promise that simulates network delay (1.5 seconds)
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    // Simulate a potential server-side error
-                    if (data.title.toLowerCase().includes("fail")) {
-                        reject(new Error("Mock API Error: Invalid task title."));
-                    } else {
-                        // Simulate a successful response from the server
-                        // The server would typically return the created document with its new _id
-                        const responseData = {
-                            _id: 'mongo-' + Math.random().toString(36).substr(2, 9),
-                            ...data
-                        };
-                        console.log("Mock API Success:", responseData);
-                        resolve(responseData);
-                    }
-                }, 1500);
-            });
+        async function saveTaskToSupabase(data) {
+            // Assumes your table is named 'tasks'
+            const { data: insertedTask, error } = await supabaseClient
+                .from('tasks')
+                .insert([data])
+                .select('*')
+                .single(); // .single() returns the inserted object
+
+            if (error) throw error;
+            return insertedTask;
         }
 
         /**
@@ -415,14 +457,11 @@
 
         /**
          * Displays a success or error message to the user.
-         * @param {string | null} message - The message to display, or null to hide.
-         * @param {'success' | 'error'} type - The type of message.
          */
         function showMessage(message, type = 'success') {
             messageContainer.innerHTML = ''; // Clear existing messages
             
             if (!message) {
-                // Hide all messages if message is null
                 const existingBox = messageContainer.querySelector('.message-box');
                 if (existingBox) {
                     existingBox.classList.remove('visible');
@@ -430,14 +469,12 @@
                 return;
             }
 
-            // Define styles based on type
             const isSuccess = type === 'success';
             const bgColor = isSuccess ? 'bg-green-100' : 'bg-red-100';
             const borderColor = isSuccess ? 'border-green-400' : 'border-red-400';
             const textColor = isSuccess ? 'text-green-800' : 'text-red-800';
             const icon = isSuccess ? 'check-circle' : 'alert-triangle';
 
-            // Create the message element
             const messageEl = document.createElement('div');
             messageEl.className = `message-box p-4 border-l-4 ${bgColor} ${borderColor} ${textColor} rounded-lg flex items-start space-x-3`;
             
@@ -452,35 +489,36 @@
             `;
             
             messageContainer.appendChild(messageEl);
+            lucide.createIcons(); // Re-render the icon
 
-            lucide.createIcons(); // Re-render the icon we just added
-
-            // Force reflow to enable animation
-            void messageEl.offsetWidth;
-            
-            // Make it visible
+            void messageEl.offsetWidth; // Force reflow
             messageEl.classList.add('visible');
 
-            // Scroll to the top to make the message visible
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         /**
          * Displays the successfully posted task on the page.
-         * @param {object} task - The posted task data.
+         * @param {object} task - The posted task data from Supabase
          */
         function displayPostedTask(task) {
             if (noTasksMessage) {
-                noTasksMessage.remove(); // Remove the initial "No tasks posted yet" message
+                noTasksMessage.style.display = 'none'; // Use style to hide
             }
 
             const taskCard = document.createElement('div');
             taskCard.className = 'bg-white p-6 rounded-xl shadow-lg border border-skinks-secondary/30 transition transform hover:shadow-xl hover:-translate-y-0.5';
+            
+            // Use Supabase column names
+            const budgetText = task.budget_type === 'Hourly Rate' 
+                ? `$${task.budget_amount}/hr` 
+                : `$${task.budget_amount} (Fixed)`;
+
             taskCard.innerHTML = `
                 <div class="flex justify-between items-start mb-4">
                     <h3 class="text-2xl font-bold text-skinks-primary">${task.title}</h3>
                     <span class="px-3 py-1 text-sm font-medium rounded-full bg-skinks-accent text-white whitespace-nowrap">
-                        ${task.budget.type === 'Hourly Rate' ? '$' + task.budget.amount + '/hr' : '$' + task.budget.amount + ' (Fixed)'}
+                        ${budgetText}
                     </span>
                 </div>
                 <p class="text-gray-600 mb-4 line-clamp-3">${task.description}</p>
@@ -500,20 +538,29 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                     <button class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                        View Details (ID: ${task._id.substring(5, 12)}...)
+                        View Details (ID: ${task.id.toString().substring(0, 8)}...)
                     </button>
                 </div>
             `;
 
-            // Prepend the new task so it shows at the top of the list
             postedTasksList.prepend(taskCard);
+            lucide.createIcons(); // Re-render Lucide icons
             
-            lucide.createIcons(); // Re-render Lucide icons inside the new card
-            
-            // Scroll to the new task list
             document.getElementById('posted-tasks-section').scrollIntoView({ behavior: 'smooth' });
         }
 
     </script>
+    
+    <!-- Fallback script for non-module JS -->
+    <script>
+        // Fallback for handleJoinClick if module fails or for static HTML
+        if (!window.handleJoinClick) {
+            window.handleJoinClick = function() {
+                console.log("Join Clicked: Redirecting to Login.");
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
 </body>
 </html>
+

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Skinks</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 1. Load Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9',
+                        'skinks-secondary': '#a78bfa',
+                        'skinks-accent': '#f472b6',
+                        'skinks-background': '#f9fafb',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #f9fafb; }
+        
+        /* Style for skill tags */
+        .skill-tag {
+            transition: all 0.2s ease;
+        }
+        .skill-tag:hover {
+            transform: scale(1.05);
+        }
+        .skill-tag button {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .skill-tag:hover button {
+            opacity: 1;
+        }
+
+        /* Custom message box for errors */
+        #message-box {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Avatar Upload Styles */
+        #avatar-upload-input {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
+                    <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
+                    <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
+                    <a href="Post-Task.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
+                    <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
+                    <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
+                </nav>
+                <!-- Auth Button Container -->
+                <div id="desktop-auth-container" class="hidden md:block">
+                    <!-- This will be replaced by Supabase auth logic -->
+                    <button onclick="window.location.href='myprofile.html'" id="desktop-join-btn" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        My Profile
+                    </button>
+                </div>
+                <!-- Mobile Menu Button (Hamburger Icon) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
+                <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
+                <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
+                <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
+                <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
+                <!-- Mobile Auth Button Container -->
+                <div id="mobile-auth-container">
+                    <button onclick="window.location.href='myprofile.html'" id="mobile-join-btn" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        My Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        <h1 class="text-4xl font-extrabold text-skinks-primary mb-8 text-center">My Profile</h1>
+
+        <!-- Profile Card -->
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden p-8 mb-8">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
+                
+                <!-- Avatar -->
+                <div class="flex-shrink-0 relative">
+                    <div class="w-32 h-32 bg-skinks-background rounded-full flex items-center justify-center border-4 border-skinks-secondary overflow-hidden relative">
+                        <!-- Image will be loaded here by JS -->
+                        <img id="profile-avatar-img" src="" alt="Profile Avatar" class="w-full h-full object-cover hidden">
+                        <!-- Fallback Icon -->
+                        <i id="profile-avatar-icon" data-lucide="user-circle-2" class="w-24 h-24 text-skinks-primary"></i>
+
+                        <!-- Loading Spinner (Hidden by default) -->
+                        <div id="avatar-loading-spinner" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm hidden">
+                            <div class="w-12 h-12 border-4 border-t-skinks-primary border-gray-200 rounded-full animate-spin"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Button Overlay -->
+                    <label for="avatar-upload-input" class="absolute -bottom-1 -right-1 p-2 bg-skinks-primary text-white rounded-full shadow-lg cursor-pointer hover:bg-skinks-secondary transition duration-300" title="Upload new avatar">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                        <input type="file" id="avatar-upload-input" class="hidden" accept="image/png, image/jpeg">
+                    </label>
+                </div>
+                
+                <!-- User Info -->
+                <div class="flex-1 text-center sm:text-left">
+                    <h2 id="profile-name" class="text-3xl font-bold text-gray-900 mb-1">Loading...</h2>
+                    <p id="profile-email" class="text-lg text-gray-600 mb-3">Loading...</p>
+                    <span class="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">
+                        Member Since: <span id="member-since">...</span>
+                    </span>
+                </div>
+                <!-- Logout Button -->
+                <button id="logout-button" class="w-full sm:w-auto px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-lg hover:bg-red-600 transition duration-300 flex-shrink-0">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Edit Profile Section -->
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden p-8 mb-8">
+            <h3 class="text-2xl font-bold text-skinks-primary mb-4">Edit Profile</h3>
+            <form id="save-profile-form" class="space-y-4">
+                <div>
+                    <label for="edit-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input id="edit-name" type="text" class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50">
+                </div>
+                <div>
+                    <label for="edit-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input id="edit-email" type="email" class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50" disabled>
+                    <p class="text-xs text-gray-500 mt-1">Email address cannot be changed.</p>
+                </div>
+                <button type="submit" class="w-full sm:w-auto px-6 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+
+        <!-- Add Skills Section -->
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden p-8">
+            <h3 class="text-2xl font-bold text-skinks-primary mb-4">My Skills</h3>
+            <p class="text-gray-600 mb-4">Add skills to help others find you. (e.g., "Plumbing", "Math Tutor", "Web Design")</p>
+            
+            <!-- Skill Tag List -->
+            <div id="skills-list" class="flex flex-wrap gap-3 mb-6">
+                <!-- Skills will be dynamically added here -->
+            </div>
+            
+            <form id="add-skill-form" class="flex flex-col sm:flex-row gap-3">
+                <input id="add-skill-input" type="text" placeholder="Enter a new skill..." class="flex-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50" required>
+                <button type="submit" class="px-6 py-3 bg-skinks-accent text-white font-semibold rounded-lg shadow-lg hover:bg-pink-600 transition duration-300">
+                    Add Skill
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Custom Message Box (Hidden) -->
+    <div id="message-box" class="fixed top-8 right-8 p-4 max-w-sm z-50 bg-red-500 text-white rounded-lg shadow-lg opacity-0 transform translate-y-2 pointer-events-none">
+        <span id="message-text">This is a message!</span>
+    </div>
+
+    <!-- JavaScript -->
+    <script type="module">
+        // 2. Import Supabase client
+        const { createClient } = supabase;
+
+        // 🧩 3. ADD YOUR SUPABASE CREDENTIALS HERE
+        const SUPABASE_URL = "https://zmfnuocezvjwebugnydw.supabase.co"; // Replace with your Supabase URL
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs"; // Replace with your Anon Key
+
+        let supabaseClient;
+        
+        // 4. Get all the DOM elements
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const logoutButton = document.getElementById('logout-button');
+        const saveProfileForm = document.getElementById('save-profile-form');
+        const addSkillForm = document.getElementById('add-skill-form');
+        const addSkillInput = document.getElementById('add-skill-input');
+        const skillsList = document.getElementById('skills-list');
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        const memberSince = document.getElementById('member-since');
+        const editName = document.getElementById('edit-name');
+        const editEmail = document.getElementById('edit-email');
+        const avatarUploadInput = document.getElementById('avatar-upload-input');
+        const avatarImg = document.getElementById('profile-avatar-img');
+        const avatarIcon = document.getElementById('profile-avatar-icon');
+        const avatarSpinner = document.getElementById('avatar-loading-spinner');
+        // NEW: Auth container selectors
+        const desktopAuthContainer = document.getElementById('desktop-auth-container');
+        const mobileAuthContainer = document.getElementById('mobile-auth-container');
+
+
+        // --- Core Application Logic ---
+
+        // 1. Mobile Menu Toggle Logic
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+
+        // --- 🧩 SYNC TALENT TABLE ---
+// This function ensures that user data is mirrored in the `talent` table
+async function syncTalentTable(userId) {
+  try {
+    // Fetch user info
+    const { data: userData, error: userError } = await supabaseClient
+      .from('users')
+      .select('full_name, email')
+      .eq('id', userId)
+      .single();
+
+    if (userError) {
+      console.error("Error fetching user data:", userError.message);
+      return;
+    }
+
+    // Fetch all skills for this user
+    const { data: skillsData, error: skillsError } = await supabaseClient
+      .from('user_skills')
+      .select('skill_name')
+      .eq('user_id', userId);
+
+    if (skillsError) {
+      console.error("Error fetching skills:", skillsError.message);
+      return;
+    }
+
+    const skillList = skillsData.map(s => s.skill_name);
+
+    // Upsert into talent table (insert or update)
+    const { error: talentError } = await supabaseClient
+      .from('talent')
+      .upsert([
+        {
+          id: userId,
+          name: userData.full_name,
+          email: userData.email,
+          skills: skillList,
+          created_at: new Date()
+        }
+      ]);
+
+    if (talentError) {
+      console.error("Error syncing talent:", talentError.message);
+    } else {
+      console.log("Talent table synced successfully!");
+    }
+  } catch (err) {
+    console.error("Unexpected error:", err);
+  }
+}
+
+        // 2. Load Profile (FIXED LOGIC)
+        async function loadProfile() {
+            // Use getSession() which checks storage and verifies the session
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+            if (error) {
+                console.error("Error getting session:", error.message);
+                showMessage("Could not verify session. Redirecting...", true);
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (!session) {
+                // No session found in storage. This is a hard redirect.
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // --- User is logged in ---
+            // Now we can safely get user data.
+            const user = session.user;
+            
+            // Populate basic UI
+            const userName = user.user_metadata?.full_name || 'Your Name';
+            const avatarPath = user.user_metadata?.avatar_url; 
+            
+            profileName.textContent = userName;
+            profileEmail.textContent = user.email;
+            editName.value = userName;
+            editEmail.value = user.email;
+            memberSince.textContent = new Date(user.created_at).toLocaleDateString();
+
+            // Load avatar image
+            if (avatarPath) {
+                const publicUrl = getAvatarPublicUrl(avatarPath);
+                if (publicUrl) {
+                    avatarImg.src = publicUrl + `?t=${new Date().getTime()}`; // Add timestamp to bust cache
+                    avatarImg.classList.remove('hidden');
+                    avatarIcon.classList.add('hidden');
+                }
+            }
+            
+            // Also call loadSkills
+            loadSkills(user.id);
+
+            // Add a listener in case they log out in another tab
+            supabaseClient.auth.onAuthStateChange((_event, session) => {
+                if (!session) {
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+        
+        // 3. Handle Logout
+        async function handleLogout() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                showMessage(error.message, true);
+            } else {
+                // The onAuthStateChange listener will handle the redirect
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 4. Handle Save Profile
+        async function handleSaveProfile(e) {
+            
+            e.preventDefault();
+            const newName = editName.value;
+            // You can add other fields here (bio, location, etc.)
+
+            const { data, error } = await supabaseClient.auth.updateUser({
+                data: { full_name: newName } 
+            });
+
+            if (error) {
+                showMessage(error.message, true);
+            } else {
+                profileName.textContent = data.user.user_metadata.full_name;
+                showMessage("Profile updated successfully!", false);
+            }
+            const { data: { user } } = await supabaseClient.auth.getUser();
+syncTalentTable(user.id);
+
+        }
+
+        // 5. Load Skills from Database
+       // 5. Load Skills from Database
+async function loadSkills(userId) {
+  const { data, error } = await supabaseClient
+    .from("user_skills")
+    .select("skill_name")
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("Error loading skills:", error.message);
+    return;
+  }
+
+  skillsList.innerHTML = "";
+  if (data && data.length > 0) {
+    data.forEach(({ skill_name }) => renderSkill(skill_name));
+  } else {
+    skillsList.innerHTML = "<p class='text-gray-500'>No skills added yet.</p>";
+  }
+}
+
+            // For now, let's use placeholder skills
+            const skills = ["Plumbing", "Math Tutor"]; // Mock data
+            skillsList.innerHTML = ''; // Clear list
+            skills.forEach(skill => renderSkill(skill));
+        
+
+        // 6. Add Skill Function
+        async function handleAddSkill(e) {
+            syncTalentTable(user.id);
+
+            e.preventDefault();
+            const skillName = addSkillInput.value.trim();
+            if (!skillName) return;
+
+          // 6. Add Skill Function
+async function handleAddSkill(e) {
+  e.preventDefault();
+  const skillName = addSkillInput.value.trim();
+  if (!skillName) return;
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    showMessage("You must be logged in to add a skill.", true);
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("user_skills")
+    .insert({
+      user_id: user.id,
+      skill_name: skillName,
+    });
+
+  if (error) {
+    showMessage(error.message, true);
+  } else {
+    renderSkill(skillName);
+    addSkillInput.value = "";
+    showMessage("Skill added successfully!", false);
+  }
+}
+
+            // if (error) {
+            //     showMessage(error.message, true);
+            // } else {
+                renderSkill(skillName); // Add to UI
+                addSkillInput.value = ''; // Clear input
+                showMessage("Skill added!", false);
+            // }
+        }
+        
+        // 7. Remove Skill Function
+        async function handleRemoveSkill(e) {
+           
+
+            // Use event delegation
+            if (e.target.closest && e.target.closest('.remove-skill-btn')) {
+                const skillTag = e.target.closest('.skill-tag');
+                const skillName = skillTag.dataset.skill;
+             
+                const { data: { user } } = await supabaseClient.auth.getUser();
+if (!user) {
+  showMessage("You must be logged in to remove a skill.", true);
+  return;
+}
+
+const { error } = await supabaseClient
+  .from("user_skills")
+  .delete()
+  .eq("user_id", user.id)
+  .eq("skill_name", skillName);
+
+if (error) {
+  showMessage(error.message, true);
+} else {
+  skillTag.remove();
+  showMessage("Skill removed!", false);
+}
+
+                    skillTag.remove(); // Remove from UI
+                    showMessage("Skill removed!", false);
+                // }
+            }
+        }
+
+        // 8. Helper function to render a skill tag
+        function renderSkill(name) {
+            const skillTag = document.createElement('div');
+            skillTag.className = 'skill-tag inline-flex items-center bg-skinks-primary/10 text-skinks-primary text-md font-semibold px-4 py-2 rounded-full cursor-default';
+            skillTag.dataset.skill = name;
+            skillTag.innerHTML = `
+                <span>${name}</span>
+                <button class="remove-skill-btn ml-2 p-1 rounded-full text-skinks-primary/50 hover:text-skinks-primary hover:bg-red-100">
+                    <i data-lucide="x" class="w-4 h-4" style="pointer-events: none;"></i>
+                </button>
+            `;
+            // Need to call createIcons for the new icon
+            lucide.createIcons({
+                nodes: [skillTag.querySelector('i')]
+            });
+            skillsList.appendChild(skillTag);
+        }
+
+        // 9. Custom Message Box Utility
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+        let messageTimeout;
+
+        function showMessage(message, isError = true) {
+            if (messageTimeout) clearTimeout(messageTimeout);
+            
+            messageText.textContent = message;
+            messageBox.classList.toggle('bg-red-500', isError);
+            messageBox.classList.toggle('bg-green-500', !isError);
+
+            messageBox.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+            messageBox.classList.add('opacity-100', 'translate-y-0');
+
+            messageTimeout = setTimeout(() => {
+                messageBox.classList.remove('opacity-100', 'translate-y-0');
+                messageBox.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // --- NEW AVATAR FUNCTIONS ---
+
+        // 10. Helper to get Public URL for an avatar
+        function getAvatarPublicUrl(path) {
+            if (!path || !supabaseClient) return null;
+            try {
+                const { data } = supabaseClient.storage
+                    .from('avatars') // ❗️ Assumes 'avatars' bucket
+                    .getPublicUrl(path);
+                
+                return data ? data.publicUrl : null;
+            } catch (error) {
+                console.error("Error getting avatar public URL:", error.message);
+                return null;
+            }
+        }
+
+        // 11. Handle Avatar File Upload
+        async function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file || !supabaseClient) return;
+
+            avatarSpinner.classList.remove('hidden'); // Show spinner
+
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                avatarSpinner.classList.add('hidden');
+                showMessage("You must be logged in to upload an avatar.", true);
+                return;
+            }
+
+            const fileExt = file.name.split('.').pop();
+            // Create a unique path for the new file
+            const newFilePath = `public/${user.id}/${Date.now()}.${fileExt}`;
+
+            // 1. Upload file to Supabase Storage
+            // ❗️ Assumes a PUBLIC bucket named 'avatars'
+            const { error: uploadError } = await supabaseClient.storage
+                .from('avatars')
+                .upload(newFilePath, file, {
+                    cacheControl: '3600',
+                    upsert: false 
+                });
+
+            if (uploadError) {
+                avatarSpinner.classList.add('hidden');
+                showMessage("Error uploading file: " + uploadError.message, true);
+                return;
+            }
+
+            // 2. Update user metadata with the new file path
+            const { data: updatedUser, error: updateError } = await supabaseClient.auth.updateUser({
+                data: { avatar_url: newFilePath }
+            });
+
+            if (updateError) {
+                avatarSpinner.classList.add('hidden');
+                showMessage("Error saving profile: " + updateError.message, true);
+                return;
+            }
+            
+            // 3. Update UI
+            const publicUrl = getAvatarPublicUrl(newFilePath);
+            if (publicUrl) {
+                avatarImg.src = publicUrl; // No cache-buster needed, it's a new URL
+                avatarImg.classList.remove('hidden');
+                avatarIcon.classList.add('hidden');
+            }
+
+            avatarSpinner.classList.add('hidden'); // Hide spinner
+            showMessage("Avatar updated successfully!", false);
+        }
+
+        // --- NEW: Helper Function for Initials ---
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(' ');
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+
+        // --- Page Load & Event Listeners ---
+        window.addEventListener('DOMContentLoaded', (event) => {
+            // Initialize lucide icons on load
+            lucide.createIcons();
+
+            try {
+                supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (error) {
+                console.error("Error initializing Supabase:", error.message);
+                showMessage("Failed to connect to services. Please try again later.", true);
+                return; // Stop execution
+            }
+
+            // --- NEW: Auth State Change Handler for Header ---
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (session && session.user) {
+                    // User is logged in
+                    const user = session.user;
+                    const name = user.user_metadata?.full_name || 'User';
+                    const initials = getInitials(name);
+
+                    // Update Desktop Header
+                    if (desktopAuthContainer) {
+                        desktopAuthContainer.innerHTML = `
+                            <a href="myprofile.html" class="w-10 h-10 bg-skinks-primary text-white flex items-center justify-center rounded-full font-semibold text-sm hover:bg-skinks-secondary transition-colors duration-200" title="My Profile">
+                                ${initials}
+                            </a>
+                        `;
+                    }
+                    // Update Mobile Header
+                    if (mobileAuthContainer) {
+                        mobileAuthContainer.innerHTML = `
+                            <a href="myprofile.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">
+                                My Profile
+                            </a>
+                        `;
+                    }
+                } else {
+                    // User is logged out
+                    // Update Desktop Header
+                    if (desktopAuthContainer) {
+                        desktopAuthContainer.innerHTML = `
+                            <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                                Join Now
+                            </button>
+                        `;
+                    }
+                    // Update Mobile Header
+                    if (mobileAuthContainer) {
+                        mobileAuthContainer.innerHTML = `
+                            <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                                Join Now
+                            </button>
+                        `;
+                    }
+                }
+                lucide.createIcons(); // Re-render icons if any were added
+            });
+
+
+            // Call loadProfile to check auth and populate data
+            loadProfile();
+
+            // Setup event listeners
+            logoutButton.addEventListener('click', handleLogout);  
+            saveProfileForm.addEventListener('submit', handleSaveProfile);
+            addSkillForm.addEventListener('submit', handleAddSkill);
+
+            // Setup Skill Deletion (Event Delegation)
+            skillsList.addEventListener('click', handleRemoveSkill);
+
+            // Setup Avatar Upload
+            avatarUploadInput.addEventListener('change', handleAvatarUpload);
+        });
+        
+    </script>
+</body>
+</html>
+

@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -63,6 +65,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Import Supabase client
+        import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
 
         // Enable debug logging for Firebase
         setLogLevel('Debug');
@@ -179,6 +184,68 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const loadingIndicator = document.getElementById('loading-indicator');
             const formWrapper = document.getElementById('application-wrapper');
+            const desktopAuthContainer = document.getElementById('desktop-auth-container');
+            const mobileAuthContainer = document.getElementById('mobile-auth-container');
+
+
+            // --- Supabase Client & Auth UI ---
+            const supabaseUrl = "https://zmfnuocezvjwebugnydw.supabase.co";
+            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs";
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            function getInitials(name) {
+                if (!name) return '?';
+                const parts = name.split(' ');
+                if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+                return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+            }
+
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (session && session.user) {
+                    // User is logged in
+                    const user = session.user;
+                    const name = user.user_metadata?.full_name || 'User';
+                    const initials = getInitials(name);
+
+                    // Update Desktop Header
+                    if (desktopAuthContainer) {
+                        desktopAuthContainer.innerHTML = `
+                            <a href="myprofile.html" class="w-10 h-10 bg-skinks-primary text-white flex items-center justify-center rounded-full font-semibold text-sm hover:bg-skinks-secondary transition-colors duration-200" title="My Profile">
+                                ${initials}
+                            </a>
+                        `;
+                    }
+                    // Update Mobile Header
+                    if (mobileAuthContainer) {
+                        mobileAuthContainer.innerHTML = `
+                            <a href="myprofile.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">
+                                My Profile
+                            </a>
+                        `;
+                    }
+                } else {
+                    // User is logged out
+                    // Update Desktop Header
+                    if (desktopAuthContainer) {
+                        desktopAuthContainer.innerHTML = `
+                            <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                                Join Now
+                            </button>
+                        `;
+                    }
+                    // Update Mobile Header
+                    if (mobileAuthContainer) {
+                        mobileAuthContainer.innerHTML = `
+                            <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                                Join Now
+                            </button>
+                        `;
+                    }
+                }
+                lucide.createIcons();
+            });
+            // --- End Supabase Auth UI ---
+
 
             // 1. Render Task Details First
             const task = renderTaskDetails();
@@ -192,7 +259,7 @@
             document.querySelectorAll('.scroll-reveal').forEach(el => el.classList.add('visible'));
 
 
-            // 2. Initialize Firebase and Auth
+            // 2. Initialize Firebase and Auth for Form Submission
             try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
@@ -205,7 +272,7 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                // Authenticate the user
+                // Authenticate the user for Firebase
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
@@ -215,7 +282,7 @@
                 userId = auth.currentUser?.uid || crypto.randomUUID();
                 isAuthReady = true;
 
-                console.log(`Firebase Initialized. User ID: ${userId}`);
+                console.log(`Firebase Initialized for Form. User ID: ${userId}`);
 
                 // Attach submit handler after initialization
                 document.getElementById('application-form').addEventListener('submit', submitApplication);
@@ -250,7 +317,7 @@
             const applicationData = {
                 taskId: form.elements['task-id'].value,
                 taskTitle: form.elements['task-title'].value,
-                applicantId: userId,
+                applicantId: userId, // This comes from Firebase Auth
                 proposedRate: form.elements['proposed-rate'].value,
                 rateType: form.elements['rate-type'].value,
                 pitch: form.elements['pitch'].value,
@@ -309,8 +376,12 @@
         }
 
         // Placeholder for navigation button
+        // This is separate from the Supabase auth logic which redirects to login.html
         function handleJoinClick() {
-            alertUser('info', "Simulating Join/Login redirect...");
+            alertUser('info', "Redirecting to login...");
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
         }
 
         window.handleJoinClick = handleJoinClick;
@@ -330,14 +401,14 @@
                 <nav class="hidden md:flex space-x-6">
                     <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
                     <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
-                   
+                    
                     <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
                     <a href="Post-Task.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Task Hub</a>
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
                 </nav>
-                <!-- Call to Action Button -->
-                <div class="hidden md:block">
+                <!-- Call to Action Button Container -->
+                <div id="desktop-auth-container" class="hidden md:block">
                     <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
                         Join Now
                     </button>
@@ -353,14 +424,17 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
                 <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
-               
+                
                 <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
-                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task HubTask Hub</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
-                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                    Join Now
-                </button>
+                <!-- Mobile Auth Button Container -->
+                <div id="mobile-auth-container">
+                    <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -369,7 +443,7 @@
     <main class="py-12 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Back Button -->
-        <a href="Post-Task .html" class="text-sm font-semibold text-skinks-secondary hover:text-skinks-primary flex items-center mb-8 transition duration-150">
+        <a href="Post-Task.html" class="text-sm font-semibold text-skinks-secondary hover:text-skinks-primary flex items-center mb-8 transition duration-150">
             <i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i> Back to Task Listings
         </a>
 

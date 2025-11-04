@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Sign Up | Skinks</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'skinks-primary': '#6d28d9', // Deep Violet/Purple
+                        'skinks-secondary': '#a78bfa', // Lighter Purple
+                        'skinks-accent': '#f472b6', // Pink Accent
+                        'skinks-background': '#f9fafb', // Light Gray Background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+        
+        /* --- New Background Animation --- */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 75% 25%, rgba(244, 114, 182, 0.1), transparent 40%),
+                        radial-gradient(circle at 25% 75%, rgba(167, 139, 250, 0.15), transparent 40%);
+            animation: rotate-bg 25s linear infinite;
+            pointer-events: none;
+            z-index: -1; /* Ensure it's behind all content */
+        }
+
+        @keyframes rotate-bg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        /* --- End Background Animation --- */
+
+
+        /* Simple fade-in animation for the form */
+        .form-container {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- New Floating Card Animation --- */
+        .card-float {
+            animation: float-card 6s ease-in-out infinite;
+        }
+
+        @keyframes float-card {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        /* --- End Floating Card Animation --- */
+
+        /* Custom message box for errors */
+        #message-box {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-skinks-background font-sans text-gray-800">
+
+    <!-- Simple Header with Logo -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-center sm:justify-start items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
+                    Skinks
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Login/Sign Up Card -->
+    <main class="min-h-[calc(100vh-128px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <!-- Added card-float animation class -->
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 card-float">
+            <!-- Tabs -->
+            <div class="flex">
+                <button id="tab-login" class="w-1/2 py-4 font-semibold text-lg border-b-4 border-skinks-primary text-skinks-primary">
+                    Login
+                </button>
+                <button id="tab-signup" class="w-1/2 py-4 font-semibold text-lg text-gray-400 border-b-2 border-gray-200 hover:bg-gray-50">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Form Containers -->
+            <div class="p-8 sm:p-10">
+                
+                <!-- Login Form (Visible by default) -->
+                <div id="login-form" class="form-container space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 text-center">Welcome Back!</h2>
+                    <form onsubmit="handleLogin(event)" class="space-y-6">
+                        <div>
+                            <label for="login-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                            <input id="login-email" name="email" type="email" autocomplete="email" required
+                                class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50">
+                        </div>
+                        <div>
+                            <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <input id="login-password" name="password" type="password" autocomplete="current-password" required
+                                class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50">
+                        </div>
+                        <div class="text-right">
+                            <a href="#" class="text-sm font-medium text-skinks-primary hover:text-skinks-accent">Forgot password?</a>
+                        </div>
+                        <button type="submit"
+                            class="w-full py-3 px-4 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300 focus:outline-none focus:ring-2 focus:ring-skinks-primary focus:ring-offset-2">
+                            Login
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Sign Up Form (Hidden by default) -->
+                <div id="signup-form" class="form-container space-y-6 hidden">
+                    <h2 class="text-3xl font-bold text-gray-900 text-center">Join Skinks Today!</h2>
+                    <form onsubmit="handleSignUp(event)" class="space-y-6">
+                        <div>
+                            <label for="signup-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input id="signup-name" name="name" type="text" autocomplete="name" required
+                                class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50">
+                        </div>
+                        <div>
+                            <label for="signup-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                            <input id="signup-email" name="email" type="email" autocomplete="email" required
+                                class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50">
+                        </div>
+                        <div>
+                            <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <input id="signup-password" name="password" type="password" autocomplete="new-password" required
+                                class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50">
+                        </div>
+                        <div>
+                            <label for="signup-confirm-password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                            <input id="signup-confirm-password" name="confirm-password" type="password" autocomplete="new-password" required
+                                class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-skinks-primary focus:ring focus:ring-skinks-primary/50">
+                        </div>
+                        <button type="submit"
+                            class="w-full py-3 px-4 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300 focus:outline-none focus:ring-2 focus:ring-skinks-primary focus:ring-offset-2">
+                            Create Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Simple Footer for "Back to Home" -->
+    <footer class="bg-skinks-background text-center py-4">
+        <a href="index.html" class="text-sm text-gray-600 hover:text-skinks-primary">
+            &larr; Back to Home
+        </a>
+    </footer>
+
+    <!-- Custom Message Box (Hidden) -->
+    <div id="message-box" class="fixed top-8 right-8 p-4 max-w-sm z-50 bg-red-500 text-white rounded-lg shadow-lg opacity-0 transform translate-y-2 pointer-events-none">
+        <span id="message-text">This is an error message!</span>
+    </div>
+
+    
+    <!-- CONSOLIDATED SCRIPT BLOCK -->
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- SUPABASE CLIENT ---
+        // 🧩 Replace these with your actual project credentials:
+        const SUPABASE_URL = "https://zmfnuocezvjwebugnydw.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs";
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+        // --- UI ELEMENTS ---
+        const tabLogin = document.getElementById('tab-login');
+        const tabSignup = document.getElementById('tab-signup');
+        const formLogin = document.getElementById('login-form');
+        const formSignup = document.getElementById('signup-form');
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+        let messageTimeout;
+
+        // --- TAB SWITCHING LOGIC ---
+        tabLogin.addEventListener('click', () => {
+            // Show Login Form
+            formLogin.classList.remove('hidden');
+            formSignup.classList.add('hidden');
+
+            // Style Login Tab (Active)
+            tabLogin.classList.add('border-skinks-primary', 'text-skinks-primary');
+            tabLogin.classList.remove('text-gray-400', 'border-gray-200', 'hover:bg-gray-50');
+            tabLogin.style.borderBottomWidth = '4px';
+
+            // Style Sign Up Tab (Inactive)
+            tabSignup.classList.add('text-gray-400', 'border-gray-200', 'hover:bg-gray-50');
+            tabSignup.classList.remove('border-skinks-primary', 'text-skinks-primary');
+            tabSignup.style.borderBottomWidth = '2px';
+        });
+
+        tabSignup.addEventListener('click', () => {
+            // Show Sign Up Form
+            formLogin.classList.add('hidden');
+            formSignup.classList.remove('hidden');
+
+            // Style Login Tab (Inactive)
+            tabLogin.classList.add('text-gray-400', 'border-gray-200', 'hover:bg-gray-50');
+            tabLogin.classList.remove('border-skinks-primary', 'text-skinks-primary');
+            tabLogin.style.borderBottomWidth = '2px';
+
+            // Style Sign Up Tab (Active)
+            tabSignup.classList.add('border-skinks-primary', 'text-skinks-primary');
+            tabSignup.classList.remove('text-gray-400', 'border-gray-200', 'hover:bg-gray-50');
+            tabSignup.style.borderBottomWidth = '4px';
+        });
+
+        
+        // --- MESSAGE BOX FUNCTION ---
+        // Attached to window to be globally accessible
+        window.showMessage = function(message, isError = true) {
+            if (messageTimeout) {
+                clearTimeout(messageTimeout);
+            }
+            
+            messageText.textContent = message;
+            messageBox.classList.toggle('bg-red-500', isError);
+            messageBox.classList.toggle('bg-green-500', !isError);
+
+            messageBox.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+            messageBox.classList.add('opacity-100', 'translate-y-0');
+
+            messageTimeout = setTimeout(() => {
+                messageBox.classList.remove('opacity-100', 'translate-y-0');
+                messageBox.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+            }, 3000);
+        }
+
+        
+        // --- AUTH FUNCTIONS ---
+        // Attached to window to be callable from onsubmit=""
+        window.handleSignUp = async function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const pass1 = document.getElementById('signup-password').value;
+            const pass2 = document.getElementById('signup-confirm-password').value;
+
+            if (pass1 !== pass2) {
+                showMessage("Passwords do not match!", true);
+                return;
+            }
+
+            // 👇 Create user with Supabase Auth
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: pass1,
+                options: {
+                    data: { full_name: name }
+                }
+            });
+
+            if (error) {
+                console.error(error);
+                showMessage(error.message, true);
+            } else {
+                showMessage("Account created! Please verify your email.", false);
+                // Optionally switch to login tab
+                setTimeout(() => document.getElementById('tab-login').click(), 1500);
+            }
+        }
+
+        // Attached to window to be callable from onsubmit=""
+        window.handleLogin = async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (error) {
+                console.error(error);
+                showMessage(error.message, true);
+            } else {
+                showMessage("Login successful! Redirecting...", false);
+                setTimeout(() => {
+                    window.location.href = "verified.html"; // Redirect to home
+                }, 1500);
+            }
+        }
+            
+        // Attached to window to be globally accessible
+        window.switchToLogin = function() {
+            // Helper to programmatically click the login tab
+            tabLogin.click();
+        }
+
+    </script>
+    
+    <!-- The conflicting script tag has been removed -->
+
+</body>
+</html>
+

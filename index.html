@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Load Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -110,16 +112,17 @@
                     <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
                     
                     <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
-                    <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
+                    <a href="Post-Task.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
                 </nav>
-                <!-- Call to Action Button -->
-                <div class="hidden md:block">
-                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
-                        Join Now
-                    </button>
+                
+                <!-- Call to Action Button / Profile Icon -->
+                <!-- This container's content will be set by JS -->
+                <div id="desktop-auth-controls" class="hidden md:flex items-center justify-center" style="min-width: 80px;">
+                    <!-- JS will inject either "Join Now" button or Profile Circle here -->
                 </div>
+
                 <!-- Mobile Menu Button (Hamburger Icon) -->
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
                     <i data-lucide="menu" class="w-6 h-6"></i>
@@ -136,9 +139,13 @@
                 <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
-                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                    Join Now
-                </button>
+                
+                <!-- Mobile Auth Controls -->
+                <!-- This container's content will be set by JS -->
+                <div id="mobile-auth-controls">
+                    <!-- JS will inject either "Join Now" button or "My Profile" link here -->
+                </div>
+
             </div>
         </div>
     </header>
@@ -153,10 +160,10 @@
                 Connect. Collaborate. Earn Within your neighborhood. Find reliable help or offer your skills in a 5km radius.
             </p>
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <button onclick="window.location.href='find-talent.html';" class="w-full sm:w-auto px-8 py-3 bg-skinks-primary text-white text-lg font-semibold rounded-xl shadow-xl shadow-skinks-primary/30 hover:bg-skinks-secondary transition duration-300 transform hover:scale-[1.02] animate-pulse-cta">
+                <button onclick="window.location.href='./find-talent.html';" class="w-full sm:w-auto px-8 py-3 bg-skinks-primary text-white text-lg font-semibold rounded-xl shadow-xl shadow-skinks-primary/30 hover:bg-skinks-secondary transition duration-300 transform hover:scale-[1.02] animate-pulse-cta">
                     Find Local Talent
                 </button>
-                <button onclick="window.location.href='Post-Task.html';" class="w-full sm:w-auto px-8 py-3 bg-white border border-skinks-secondary text-skinks-primary text-lg font-semibold rounded-xl shadow-md hover:bg-gray-50 transition duration-300">
+                <button onclick="window.location.href='./Post-Task.html';" class="w-full sm:w-auto px-8 py-3 bg-white border border-skinks-secondary text-skinks-primary text-lg font-semibold rounded-xl shadow-md hover:bg-gray-50 transition duration-300">
                     Offer a Skill
                 </button>
             </div>
@@ -200,54 +207,51 @@
         </div>
     </section>
 
-    <!-- Features Overview Section -->
+    <!-- Features Overview Section (MODIFIED) -->
     <section class="py-16 sm:py-24 bg-skinks-background scroll-reveal">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl sm:text-4xl font-bold text-center text-skinks-primary mb-12">How Skinks Connects You</h2>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <!-- Text Content -->
-                <div class="space-y-8">
+            <!-- Changed grid to 1 column and centered the content -->
+            <div class="grid grid-cols-1 gap-12 items-center">
+                
+                <!-- Text Content (Now centered and rewritten) -->
+                <div class="space-y-8 max-w-3xl mx-auto">
+                    
                     <div class="flex items-start space-x-4">
                         <div class="flex-shrink-0 p-3 rounded-full bg-skinks-accent text-white shadow-lg">
                             <i data-lucide="user-check" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-semibold text-gray-900">1. Detailed Skill Profiles</h4>
-                            <p class="text-gray-600">Showcase your full expertise, localized hourly rates, and track record through a clear rating system.</p>
+                            <h4 class="text-xl font-semibold text-gray-900">1. Build Your Local Reputation</h4>
+                            <p class="text-gray-600">Create a rich profile that showcases your skills, availability, and past projects. Earn reviews from your neighbors to build trust and stand out.</p>
                         </div>
                     </div>
+
                     <div class="flex items-start space-x-4">
                         <div class="flex-shrink-0 p-3 rounded-full bg-skinks-accent text-white shadow-lg">
                             <i data-lucide="message-square" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-semibold text-gray-900">2. Instant Chat & Booking</h4>
-                            <p class="text-gray-600">Forget email chains. Use our seamless in-app chat for quick negotiation and finalization of tasks.</p>
+                            <h4 class="text-xl font-semibold text-gray-900">2. Connect & Confirm Instantly</h4>
+                            <p class="text-gray-600">No more long email threads. Our secure in-app chat lets you discuss details, agree on prices, and book a job in minutes.</p>
                         </div>
                     </div>
+                    
                     <div class="flex items-start space-x-4">
                         <div class="flex-shrink-0 p-3 rounded-full bg-skinks-accent text-white shadow-lg">
                             <i data-lucide="route" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-semibold text-gray-900">3. Optimized Geo-Discovery</h4>
-                            <p class="text-gray-600">We use Geohashing and clustering to match you instantly with the nearest available talent or opportunity, ensuring speed and precision.</p>
+                            <h4 class="text-xl font-semibold text-gray-900">3. Smart Local Matching</h4>
+                            <p class="text-gray-600">Our smart algorithm finds the perfect match. We connect you with the closest, most qualified talent or the most relevant local tasks, all within your neighborhood.</p>
                         </div>
                     </div>
+
                 </div>
 
-                <!-- Mockup Image/Illustration (using SVG placeholder for modern look) -->
-                <div class="p-8 bg-white rounded-xl shadow-2xl lg:shadow-3xl border border-gray-100">
-                    <svg class="w-full h-80" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="400" height="300" rx="15" fill="#e0e0e0"/>
-                        <circle cx="200" cy="150" r="100" fill="#a78bfa" opacity="0.4"/>
-                        <path d="M200 50 L250 150 L150 150 Z" fill="#6d28d9"/>
-                        <path d="M150 150 L250 150 L200 250 Z" fill="#f472b6"/>
-                        <text x="200" y="160" font-family="Inter" font-size="24" fill="white" text-anchor="middle" font-weight="bold">Skinks Map View</text>
-                        <text x="200" y="195" font-family="Inter" font-size="14" fill="white" text-anchor="middle">Showing 5km radius</text>
-                    </svg>
-                </div>
+                <!-- Mockup Image/Illustration (REMOVED) -->
+                
             </div>
         </div>
     </section>
@@ -257,11 +261,15 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to find your local helper?</h2>
             <p class="text-xl text-skinks-secondary mb-8">Stop searching globally. Start connecting locally.</p>
-            <button onclick="handleJoinClick()" class="px-8 py-4 bg-skinks-accent text-white text-xl font-bold rounded-xl shadow-2xl hover:bg-pink-600 transition duration-300 transform hover:scale-105">
+            <!-- ADDED ID -->
+            <button id="cta-join-btn" class="px-8 py-4 bg-skinks-accent text-white text-xl font-bold rounded-xl shadow-2xl hover:bg-pink-600 transition duration-300 transform hover:scale-105">
                 Get Started for Free
             </button>
         </div>
     </section>
+
+
+    
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-12 scroll-reveal">
@@ -278,10 +286,10 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
-                    <li><a href="Post-Task .html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
-                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
-                    <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
+                    <li><a href="./find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="./Post-Task .html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="./How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="./help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
                 </ul>
             </div>
 
@@ -289,7 +297,7 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="./About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
@@ -309,7 +317,23 @@
     </footer>
 
     <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
-    <script>
+    <script type="module">
+        // Import Supabase client
+        const { createClient } = supabase;
+        
+        // 🧩 1. ADD YOUR SUPABASE CREDENTIALS HERE
+        const SUPABASE_URL = "https://zmfnuocezvjwebugnydw.supabase.co"; // Replace with your Supabase URL
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs"; // Replace with your Anon Key
+        
+        let supabaseClient;
+        try {
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (error) {
+            console.error("Error initializing Supabase:", error);
+            // If Supabase fails, default to logged-out state
+            updateAuthUI(null);
+        }
+
         // Initialize Lucide icons
         lucide.createIcons();
 
@@ -323,20 +347,105 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        // 2. Placeholder for Join/Login (since we don't have Firebase setup yet)
-        function handleJoinClick() {
-            // In a full application, this would open a sign-up modal or redirect to a login page.
-            console.log("Join Clicked: Redirecting to Sign Up/Login Modal.");
-            // We'll use a simple confirmation message instead of alert()
-            const ctaButton = event.currentTarget;
-            ctaButton.textContent = "Redirecting...";
-            setTimeout(() => {
-                ctaButton.textContent = "Join Now";
-                console.log("Simulated login redirect complete.");
-            }, 1500);
+        // 2. Helper function to get initials
+        function getInitials(name) {
+            if (!name) return '??';
+            const parts = name.split(' ');
+            if (parts.length === 1) {
+                // Handle single name (e.g., "Aryan")
+                return name.substring(0, 2).toUpperCase();
+            }
+            // Handle multiple names (e.g., "Jaspreet Singh")
+            return (parts[0][0] + (parts[parts.length - 1][0] || '')).toUpperCase();
         }
 
-        // 3. Scroll Reveal Animation Logic (Intersection Observer)
+        // 3. Function to update all auth-related UI
+        function updateAuthUI(session) {
+            const desktopAuthContainer = document.getElementById('desktop-auth-controls');
+            const mobileAuthContainer = document.getElementById('mobile-auth-controls');
+            const ctaBtn = document.getElementById('cta-join-btn');
+
+            if (session) {
+                // User is LOGGED IN
+                const user = session.user;
+                // Get name from metadata, fallback to email
+                const userName = user.user_metadata?.full_name || user.email;
+                const initials = getInitials(userName);
+                
+                // Logged In: Show Profile Circle (Desktop)
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <a href="./myprofile.html" 
+                           class="flex items-center justify-center w-10 h-10 bg-skinks-primary text-white rounded-full font-semibold text-sm shadow-lg hover:bg-skinks-secondary transition duration-300"
+                           title="My Profile">
+                           ${initials}
+                        </a>
+                    `;
+                }
+                
+                // Logged In: Show "My Profile" Link (Mobile)
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <a href="./myprofile.html" class="block w-full text-left mt-2 px-4 py-2 bg-skinks-secondary/20 text-skinks-primary font-semibold rounded-lg hover:bg-skinks-secondary/30 transition duration-300">
+                            My Profile
+                        </a>
+                    `;
+                }
+
+                // Logged In: Update CTA Button
+                if (ctaBtn) {
+                    ctaBtn.textContent = 'Go to My Profile';
+                    ctaBtn.onclick = () => { window.location.href = './myprofile.html'; };
+                }
+
+            } else {
+                // User is LOGGED OUT
+                
+                // Logged Out: Show "Join Now" Button (Desktop)
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='./login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+
+                // Logged Out: Show "Join Now" Button (Mobile)
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='./login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+
+                // Logged Out: Update CTA Button
+                if (ctaBtn) {
+                    ctaBtn.textContent = 'Get Started for Free';
+                    ctaBtn.onclick = () => { window.location.href = './login.html'; };
+                }
+            }
+        }
+
+        // 4. NEW: Check Login State on Page Load and listen for changes
+        window.addEventListener('DOMContentLoaded', (event) => {
+            // Run it once on load
+            if (supabaseClient) {
+                supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    updateAuthUI(session);
+                });
+
+                // Listen for future auth changes
+                supabaseClient.auth.onAuthStateChange((_event, session) => {
+                    updateAuthUI(session);
+                });
+            } else {
+                // Fallback if Supabase failed to init
+                updateAuthUI(null);
+            }
+        });
+
+        // 5. Scroll Reveal Animation Logic (Intersection Observer)
         const observerOptions = {
             root: null, // relative to the viewport
             rootMargin: '0px',
@@ -363,3 +472,4 @@
     </script>
 </body>
 </html>
+

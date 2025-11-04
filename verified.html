@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Skinks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Reverting to the original purple theme
+                        'skinks-primary': '#4f46e5', // A strong indigo/violet
+                        'skinks-light': '#818cf8',  // Lighter shade for hover
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: { 
+                        // Custom shadow tinted with the purple primary color
+                        '3xl': '0 20px 40px -10px rgba(79, 70, 229, 0.3)', 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        #app-container {
+            min-height: 100vh;
+            /* Subtle light purple gradient for depth */
+            background: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 100%); 
+        }
+    </style>
+</head>
+<body class="font-sans" id="app-container">
+
+    <main class="flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <!-- Reduced max-w-lg to max-w-md for a smaller overall container -->
+        <div class="w-full max-w-md bg-white rounded-xl border border-gray-100 shadow-3xl overflow-hidden p-6 sm:p-8 text-center">
+            
+            <!-- Success Icon (Reduced size h-16 w-16 to h-12 w-12) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-skinks-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+
+            <!-- Heading reduced from text-3xl to text-2xl -->
+            <h2 class="mt-3 text-2xl font-extrabold text-gray-900">
+                Account Activated!
+            </h2>
+            <!-- Paragraph reduced from text-lg to text-base -->
+            <p class="mt-2 text-base text-gray-600">
+                Welcome to Skinks, your hyperlocal skill network.
+            </p>
+            <p class="mt-3 text-sm text-gray-500">
+                You're all set to find local talent or start offering your skills in your neighborhood.
+            </p>
+            
+            <div class="mt-6 space-y-3">
+                <!-- Button reduced from py-3 px-4 text-base to py-2 px-3 text-sm -->
+                <a href="/dashboard.html" class="inline-flex justify-center w-full py-2 px-3 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-skinks-primary hover:bg-skinks-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-skinks-primary transition-colors">
+                    Continue to Dashboard
+                </a>
+                <p class="text-xs text-gray-500">
+                    (In a live environment, this button would take you to the main application.)
+                </p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -58,11 +60,9 @@
             transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
             cursor: pointer;
-            /* Using a subtle, soft shadow by default */
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
         }
         .task-card:hover {
-            /* Subtle lift and a more pronounced but contained shadow */
             transform: translateY(-4px);
             box-shadow: 0 10px 20px rgba(109, 40, 217, 0.1);
         }
@@ -78,7 +78,7 @@
                 <a href="index.html" class="text-2xl font-bold text-skinks-primary tracking-tight">
                     Skinks
                 </a>
-                <!-- Desktop Navigation (Active link is Find Talent) -->
+                <!-- Desktop Navigation (Active link is Task Hub) -->
                 <nav class="hidden md:flex space-x-6">
                     <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
                     <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
@@ -88,9 +88,9 @@
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
                 </nav>
-                <!-- Call to Action Button -->
-                <div class="hidden md:block">
-                    <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                <!-- Auth Button Container -->
+                <div id="desktop-auth-container" class="hidden md:block">
+                    <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
                         Join Now
                     </button>
                 </div>
@@ -110,9 +110,12 @@
                 <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
-                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                    Join Now
-                </button>
+                <!-- Mobile Auth Button Container -->
+                <div id="mobile-auth-container">
+                    <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -121,7 +124,7 @@
     <main class="py-8 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <header class="text-center mb-16 scroll-reveal">
             <h1 class="text-4xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">
-                Find Local Talent
+                Find Local Tasks
             </h1>
             <p class="text-xl text-gray-500 max-w-4xl mx-auto font-light">
                 Secure short-term, high-quality work opportunities within your immediate community radius.
@@ -130,7 +133,7 @@
 
         <!-- Minimalist Search and Filter Bar -->
         <div class="bg-white p-6 rounded-xl shadow-lg mb-16 border-t border-gray-100 scroll-reveal">
-            <form class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <form id="search-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                 
                 <!-- Search by Keyword (2 columns) -->
                 <div class="md:col-span-2">
@@ -145,18 +148,17 @@
                 <div>
                     <label for="category" class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Category</label>
                     <select id="category" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-skinks-secondary focus:border-skinks-secondary transition appearance-none text-gray-800">
-                        <option>All Skills</option>
-                        <option>Home Repair</option>
-                        <option>Digital/Tech</option>
-                        <option>Pet Care</option>
-                        <option>Tutoring</option>
-                        <option>Delivery/Errands</option>
+                        <option value="">All Skills</option>
+                        <option value="Home Repair">Home Repair</option>
+                        <option value="Digital/Tech">Digital/Tech</option>
+                        <option value="Pet Care">Pet Care</option>
+                        <option value="Tutoring">Tutoring</option>
+                        <option value="Delivery/Errands">Delivery/Errands</option>
                     </select>
                 </div>
 
                 <!-- Action Button -->
                 <div>
-                    <!-- The mt-7 and md:mt-0 ensures the button aligns properly on mobile vs desktop -->
                     <button type="submit" class="w-full mt-7 md:mt-0 px-4 py-3 bg-skinks-primary text-white font-semibold rounded-lg shadow-md hover:bg-skinks-secondary transition duration-300">
                         Search
                     </button>
@@ -164,161 +166,21 @@
             </form>
         </div>
         
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="flex justify-center items-center py-12">
+            <div class="w-12 h-12 border-4 border-t-skinks-primary border-gray-200 rounded-full animate-spin"></div>
+        </div>
+
         <!-- Task Listings Grid -->
         <div id="task-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            <!-- Task Card 1: Home Repair (Fixed Price) -->
-            <a href="applynow.html" onclick="console.log('Task 1 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
-                
-                <!-- Task Header and Tags -->
-                <div class="flex justify-between items-start mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Fix Broken Fence Post</h2>
-                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-skinks-accent/10 text-skinks-accent">NEW</span>
-                </div>
-
-                <!-- Metadata Row (Minimalist) -->
-                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 1.5 km</span>
-                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Home Repair</span>
-                </div>
-                
-                <!-- Description -->
-                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
-                    A storm damaged one fence post in the backyard. Need someone to replace it and ensure the gate is aligned correctly. Materials will be provided.
-                </p>
-
-                <!-- Pricing and CTA -->
-                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <div class="text-3xl font-extrabold text-skinks-primary">
-                        $120
-                        <span class="text-sm font-medium text-gray-500 block -mt-1">Fixed Price</span>
-                    </div>
-                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
-                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
-                    </span>
-                </div>
-            </a>
-
-            <!-- Task Card 2: Digital/Tech (Hourly Rate) -->
-            <a href="applynow.html" onclick="console.log('Task 2 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
-                <div class="flex justify-between items-start mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Need WordPress Cleanup</h2>
-                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-600">URGENT</span>
-                </div>
-                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Remote (2.8 km)</span>
-                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Digital/Tech</span>
-                </div>
-                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
-                    My small business WordPress site is running slow. Need a local expert to optimize images, clear cache, and run a security check.
-                </p>
-                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <div class="text-3xl font-extrabold text-skinks-accent">
-                        $35
-                        <span class="text-sm font-medium text-gray-500 block -mt-1">Per Hour</span>
-                    </div>
-                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
-                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
-                    </span>
-                </div>
-            </a>
-
-            <!-- Task Card 3: Pet Care (Fixed Price) -->
-            <a href="applynow.html" onclick="console.log('Task 3 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
-                <div class="flex justify-between items-start mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Weekend Dog Sitting</h2>
-                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-skinks-accent/10 text-skinks-accent">NEW</span>
-                </div>
-                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 0.9 km</span>
-                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Pet Care</span>
-                </div>
-                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
-                    Need a responsible person to watch a friendly cat and dog from Friday evening to Sunday afternoon. Must be comfortable administering oral meds.
-                </p>
-                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <div class="text-3xl font-extrabold text-skinks-primary">
-                        $150
-                        <span class="text-sm font-medium text-gray-500 block -mt-1">Fixed Price</span>
-                    </div>
-                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
-                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
-                    </span>
-                </div>
-            </a>
-
-             <!-- Task Card 4: Delivery/Errands (Hourly Rate) -->
-            <a href="applynow.html" onclick="console.log('Task 4 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
-                <div class="flex justify-between items-start mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Grocery Pickup & Delivery</h2>
-                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-600">TODAY</span>
-                </div>
-                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 4.1 km</span>
-                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Delivery/Errands</span>
-                </div>
-                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
-                    Need someone with a car to pick up groceries from the local market (list provided) and drop them off at my apartment building.
-                </p>
-                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <div class="text-3xl font-extrabold text-skinks-accent">
-                        $22
-                        <span class="text-sm font-medium text-gray-500 block -mt-1">Per Hour</span>
-                    </div>
-                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
-                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
-                    </span>
-                </div>
-            </a>
-            
-             <!-- Task Card 5: Tutoring (Hourly Rate) -->
-            <a href="applynow.html" onclick="console.log('Task 5 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
-                <div class="flex justify-between items-start mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Spanish Language Help</h2>
-                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-skinks-accent/10 text-skinks-accent">NEW</span>
-                </div>
-                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 2.8 km</span>
-                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Tutoring</span>
-                </div>
-                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
-                    Looking for conversational practice sessions for a beginner adult learner. Must be a native or fluent Spanish speaker.
-                </p>
-                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <div class="text-3xl font-extrabold text-skinks-accent">
-                        $30
-                        <span class="text-sm font-medium text-gray-500 block -mt-1">Per Hour</span>
-                    </div>
-                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
-                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
-                    </span>
-                </div>
-            </a>
-
-            <!-- Task Card 6: Home Repair (Fixed Price) -->
-            <a href="applynow.htmlss" onclick="console.log('Task 6 clicked')" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
-                <div class="flex justify-between items-start mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">Install Shelf Unit (IKEA)</h2>
-                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-600">TODAY</span>
-                </div>
-                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> 0.3 km</span>
-                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> Home Repair</span>
-                </div>
-                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">
-                    Need help assembling a large IKEA shelving unit in a home office. Must have basic tools (screwdrivers, level, etc.).
-                </p>
-                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <div class="text-3xl font-extrabold text-skinks-primary">
-                        $50
-                        <span class="text-sm font-medium text-gray-500 block -mt-1">Fixed Price</span>
-                    </div>
-                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
-                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
-                    </span>
-                </div>
-            </a>
-            
+            <!-- Task cards will be injected here by Supabase JS -->
+        </div>
+        
+        <!-- No results message -->
+        <div id="no-tasks-message" class="hidden text-center py-12">
+            <i data-lucide="search-x" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700">No Tasks Found</h3>
+            <p class="text-gray-500">Try adjusting your search terms or category.</p>
         </div>
         
         <!-- Pagination/Load More Placeholder -->
@@ -346,7 +208,7 @@
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
                     <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
-                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150"</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
                     <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
                     <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
                 </ul>
@@ -375,60 +237,190 @@
         </div>
     </footer>
 
-    <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
-    <script>
-        // Initialize Lucide icons
+    
+    <!-- Supabase and Dynamic Data Script -->
+<script type"module">
+    // Import Supabase client
+    const { createClient } = supabase;
+
+    // 🔗 Your Supabase credentials
+    const supabaseUrl = "https://zmfnuocezvjwebugnydw.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs";
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // --- UI Element Selectors ---
+    const taskList = document.getElementById("task-list");
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const noTasksMessage = document.getElementById('no-tasks-message');
+    const searchForm = document.getElementById('search-form');
+    const desktopAuthContainer = document.getElementById('desktop-auth-container');
+    const mobileAuthContainer = document.getElementById('mobile-auth-container');
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    // --- Helper Function ---
+    function getInitials(name) {
+        if (!name) return '?';
+        const parts = name.split(' ');
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+
+    // --- Auth State Change Handler ---
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (session && session.user) {
+            // User is logged in
+            const user = session.user;
+            const name = user.user_metadata?.full_name || 'User';
+            const initials = getInitials(name);
+
+            // Update Desktop Header
+            if (desktopAuthContainer) {
+                desktopAuthContainer.innerHTML = `
+                    <a href="myprofile.html" class="w-10 h-10 bg-skinks-primary text-white flex items-center justify-center rounded-full font-semibold text-sm hover:bg-skinks-secondary transition-colors duration-200" title="My Profile">
+                        ${initials}
+                    </a>
+                `;
+            }
+            // Update Mobile Header
+            if (mobileAuthContainer) {
+                mobileAuthContainer.innerHTML = `
+                    <a href="myprofile.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">
+                        My Profile
+                    </a>
+                `;
+            }
+        } else {
+            // User is logged out
+            // Update Desktop Header
+            if (desktopAuthContainer) {
+                desktopAuthContainer.innerHTML = `
+                    <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                `;
+            }
+            // Update Mobile Header
+            if (mobileAuthContainer) {
+                mobileAuthContainer.innerHTML = `
+                    <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                `;
+            }
+        }
+        // Re-render icons if any were added
         lucide.createIcons();
+    });
 
-        // --- Core Application Logic ---
+    // --- Mobile Menu Toggle Logic ---
+    menuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
 
-        // 1. Mobile Menu Toggle Logic
-        const menuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
+    // --- Task Loading Logic ---
+    async function loadTasks(searchQuery = '', categoryQuery = '') {
+        loadingSpinner.classList.remove('hidden');
+        taskList.innerHTML = '';
+        noTasksMessage.classList.add('hidden');
 
-        menuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+        let query = supabaseClient
+            .from('tasks')
+            .select('*')
+            .order('posted_at', { ascending: false });
 
-        // 2. Placeholder for Join/Login
-        function handleJoinClick() {
-            console.log("Join Clicked: Redirecting to Sign Up/Login Modal.");
-            const ctaButton = event.currentTarget;
-            const originalText = ctaButton.textContent;
-
-            // Simulate loading state
-            ctaButton.textContent = "Redirecting...";
-            ctaButton.disabled = true;
-
-            setTimeout(() => {
-                ctaButton.textContent = originalText;
-                ctaButton.disabled = false;
-                console.log("Simulated login redirect complete.");
-            }, 1500);
+        if (searchQuery) {
+            query = query.ilike('title', `%${searchQuery}%`); // Search by title
+        }
+        if (categoryQuery) {
+            query = query.eq('category', categoryQuery);
         }
 
-        // 3. Scroll Reveal Animation Logic (Intersection Observer)
-        document.addEventListener('DOMContentLoaded', () => {
-            const observerOptions = {
-                root: null, 
-                rootMargin: '0px',
-                threshold: 0.1 
-            };
+        const { data: tasks, error } = await query;
 
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
+        loadingSpinner.classList.add('hidden');
 
-            document.querySelectorAll('.scroll-reveal').forEach(element => {
-                observer.observe(element);
-            });
+        if (error) {
+            console.error("Error loading tasks:", error);
+            noTasksMessage.innerHTML = `<p class="text-red-500">Error loading tasks.</p>`;
+            noTasksMessage.classList.remove('hidden');
+            return;
+        }
+
+        if (!tasks || tasks.length === 0) {
+            noTasksMessage.innerHTML = `
+                <i data-lucide="search-x" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-700">No Tasks Found</h3>
+                <p class="text-gray-500">Try adjusting your search terms or category.</p>
+            `;
+            noTasksMessage.classList.remove('hidden');
+            lucide.createIcons();
+            return;
+        }
+
+        // Render tasks
+        taskList.innerHTML = tasks.map(task => {
+            const budgetText = task.budget_type === 'Hourly Rate' 
+                ? `${task.budget_amount}/hr` 
+                : `${task.budget_amount} (Fixed)`;
+
+            return `
+            <a href="applynow.html?id=${task.id}" class="group task-card bg-white p-6 rounded-xl border border-gray-100 scroll-reveal">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 group-hover:text-skinks-primary transition leading-snug">${task.title}</h2>
+                    <span class="ml-4 px-2 py-0.5 text-xs font-semibold rounded-full bg-skinks-accent/10 text-skinks-accent">NEW</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-1 text-skinks-secondary"></i> ${task.location}</span>
+                    <span class="flex items-center"><i data-lucide="tags" class="w-4 h-4 mr-1 text-skinks-secondary"></i> ${task.category}</span>
+                </div>
+                <p class="text-gray-700 mb-6 line-clamp-3 text-sm">${task.description}</p>
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="text-3xl font-extrabold ${task.budget_type === 'Hourly Rate' ? 'text-skinks-accent' : 'text-skinks-primary'}">
+                        ${task.budget_amount}
+                        <span class="text-sm font-medium text-gray-500 block -mt-1">${task.budget_type}</span>
+                    </div>
+                    <span class="text-base font-semibold text-skinks-accent flex items-center group-hover:translate-x-1 transition duration-200">
+                        Apply <i data-lucide="chevron-right" class="w-5 h-5 ml-1"></i>
+                    </span>
+                </div>
+            </a>
+            `;
+        }).join('');
+
+        // Re-render icons
+        lucide.createIcons();
+        // Re-run scroll reveal for new items
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+    }
+
+    // --- Search Form Logic ---
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const searchTerm = document.getElementById('search').value;
+        const category = document.getElementById('category').value;
+        loadTasks(searchTerm, category);
+    });
+
+    // --- Scroll Reveal Logic ---
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
         });
+    }, { threshold: 0.1 });
 
-    </script>
+    document.querySelectorAll('.scroll-reveal').forEach(element => {
+        observer.observe(element);
+    });
+
+    // --- Initial Load ---
+    loadTasks(); // Load all tasks on page load
+    lucide.createIcons(); // Initial icon render
+
+</script>
 </body>
 </html>
+

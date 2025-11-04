@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -41,7 +43,7 @@
             background: #f9fafb;
         }
 
-        /* Scroll Reveal Transition Class (Copied from index.html) */
+        /* Scroll Reveal Transition Class */
         .scroll-reveal {
             opacity: 0;
             transform: translateY(20px);
@@ -56,7 +58,7 @@
 </head>
 <body class="bg-skinks-background font-sans text-gray-800">
 
-    <!-- Navigation Bar (Copied and adjusted for active link) -->
+    <!-- Navigation Bar (Active link is Find Talent) -->
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -67,16 +69,15 @@
                 <!-- Desktop Navigation -->
                 <nav class="hidden md:flex space-x-6">
                     <a href="index.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Home</a>
-                    <!-- Active Link -->
                     <a href="How-It-Works.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">How It Works</a>
-                   
+                    
                     <a href="find-talent.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Find Talent</a>
-                    <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
+                    <a href="Post-Task.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <a href="help.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Help</a>
                 </nav>
-                <!-- Call to Action Button -->
-                <div class="hidden md:block">
+                <!-- Auth Button Container -->
+                <div id="desktop-auth-container" class="hidden md:block">
                     <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
                         Join Now
                     </button>
@@ -92,14 +93,17 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</a>
                 <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
-               
+                
                 <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Find Talent</a>
-                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Help</a>
-                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                    Join Now
-                </button>
+                <!-- Mobile Auth Button Container -->
+                <div id="mobile-auth-container">
+                    <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -108,7 +112,7 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="scroll-reveal">
             <h1 class="text-4xl font-extrabold text-skinks-primary mb-2">Find Local Talent Near You</h1>
-            <p class="text-xl text-gray-600 mb-8">Tap into your neighborhood network. Search for skills within a 5km radius using our Geo-Discovery tool.</p>
+            <p class="text-xl text-gray-600 mb-8">Tap into your neighborhood network. Search for skills within a 5km radius.</p>
         </div>
 
         <!-- Search and Filter Bar -->
@@ -147,96 +151,28 @@
             </form>
         </div>
 
-        <!-- Map and Listings Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- NEW: Talent Listings Section -->
+        <div class="scroll-reveal">
+            <h2 class="text-2xl font-bold text-skinks-primary mb-4">Nearby Matches</h2>
             
-            <!-- Map Section (2/3 width on desktop) -->
-            <div class="lg:col-span-2 scroll-reveal">
-                <h2 class="text-2xl font-bold text-skinks-primary mb-4">Geo-Discovery Map (5km Radius)</h2>
-                <div class="bg-gray-300 rounded-xl shadow-2xl overflow-hidden" style="height: 500px;">
-                    <!-- Placeholder for Map API (e.g., Google Maps) -->
-                    <div class="flex items-center justify-center h-full text-center text-gray-700 p-8">
-                        <p class="text-xl font-medium">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1061.9655170263866!2d74.82293538371874!3d31.635437260557744!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1762206705790!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><br>
-                            Visualizing nearby talent using **Geohashing and Clustering**.
-                            <br>
-                            <span class="text-sm text-skinks-primary mt-2 flex items-center justify-center">
-                                <i data-lucide="alert-triangle" class="w-4 h-4 mr-1"></i>
-                                Real-time pins show available skills within your selected distance.
-                            </span>
-                        </p>
-                    </div>
-                </div>
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="flex justify-center items-center py-12">
+                <div class="w-12 h-12 border-4 border-t-skinks-primary border-gray-200 rounded-full animate-spin"></div>
             </div>
 
-           <div class="lg:col-span-1 scroll-reveal">
-    <h2 class="text-2xl font-bold text-skinks-primary mb-4">Nearby Matches (5)</h2>
-    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-        
-        <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
-            <div class="flex items-center justify-between">
-                <h3 class="font-semibold text-lg text-gray-900">Jaspreet S.</h3>
-                <span class="text-sm font-bold text-skinks-primary flex items-center">
-                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.8
-                </span>
+            <!-- Talent List Container -->
+            <div id="talent-list" class="space-y-4 hidden">
+                <!-- Talent cards will be injected here by Supabase JS -->
             </div>
-            <p class="text-sm text-skinks-accent my-1">Web Designer | React Expert</p>
-            <p class="text-xs text-gray-500">Distance: 1.2 km | Rate: ₹450/hr</p>
-            <a href="viewprofile.html" class="block mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</a>
-        </div>
 
-        <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
-            <div class="flex items-center justify-between">
-                <h3 class="font-semibold text-lg text-gray-900">Vanshaj Sharma</h3>
-                <span class="text-sm font-bold text-skinks-primary flex items-center">
-                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 5.0
-                </span>
+            <!-- No results message -->
+            <div id="no-results" class="hidden text-center py-12">
+                <i data-lucide="search-x" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-700">No Talent Found</h3>
+                <p class="text-gray-500">Try adjusting your search terms or distance.</p>
             </div>
-            <p class="text-sm text-skinks-accent my-1">Backend API Development</p>
-            <p class="text-xs text-gray-500">Distance: 3.5 km | Rate: ₹600/hr</p>
-            <a href="viewprofile.html" class="block mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</a>
         </div>
 
-        <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
-            <div class="flex items-center justify-between">
-                <h3 class="font-semibold text-lg text-gray-900">Priya K.</h3>
-                <span class="text-sm font-bold text-skinks-primary flex items-center">
-                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.5
-                </span>
-            </div>
-            <p class="text-sm text-skinks-accent my-1">Home Tutor (Math & Science)</p>
-            <p class="text-xs text-gray-500">Distance: 0.8 km | Rate: ₹300/hr</p>
-            <a href="viewprofile.html" class="block mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</a>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
-            <div class="flex items-center justify-between">
-                <h3 class="font-semibold text-lg text-gray-900">Aryan M.</h3>
-                <span class="text-sm font-bold text-skinks-primary flex items-center">
-                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.9
-                </span>
-            </div>
-            <p class="text-sm text-skinks-accent my-1">Graphic Design | UI/UX</p>
-            <p class="text-xs text-gray-500">Distance: 2.1 km | Rate: ₹550/hr</p>
-            <a href="viewprofile.html" class="block mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</a>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-skinks-secondary hover:shadow-lg transition duration-200 cursor-pointer">
-            <div class="flex items-center justify-between">
-                <h3 class="font-semibold text-lg text-gray-900">Kumar R.</h3>
-                <span class="text-sm font-bold text-skinks-primary flex items-center">
-                    <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> 4.2
-                </span>
-            </div>
-            <p class="text-sm text-skinks-accent my-1">Certified Electrician</p>
-            <p class="text-xs text-gray-500">Distance: 4.0 km | Rate: ₹350/visit</p>
-            <a href="viewprofile.html" class="block mt-2 w-full text-center py-1.5 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">View Profile</a>
-        </div>
-
-    </div>
-</div>
-
-        </div>
     </main>
 
     <!-- Call to Action Banner -->
@@ -265,9 +201,9 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="find_talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
-                    <li><a href="post_task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
-                    <li><a href="how_it_works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
                     <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
                 </ul>
             </div>
@@ -276,7 +212,7 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="about_us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
@@ -295,74 +231,132 @@
         </div>
     </footer>
 
-    <!-- JavaScript for Mobile Menu, Icon Rendering, and Scroll Animations -->
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+    <!-- All Modal HTML has been removed -->
 
-        // --- Core Application Logic ---
+    <!-- Supabase Client & Page Logic -->
+    <script type="module">
+        // Import Supabase client
+        const { createClient } = supabase;
 
-        // 1. Mobile Menu Toggle Logic
+        // --- Supabase Credentials ---
+        const supabaseUrl = 'https://zmfnuocezvjwebugnydw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs';
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+
+        // --- UI Element Selectors ---
         const menuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
+        const talentList = document.getElementById('talent-list');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const noResults = document.getElementById('no-results');
+        // NEW: Auth container selectors
+        const desktopAuthContainer = document.getElementById('desktop-auth-container');
+        const mobileAuthContainer = document.getElementById('mobile-auth-container');
 
+
+        // --- NEW: Helper Function for Initials ---
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(' ');
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        // --- NEW: Auth State Change Handler ---
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+                // User is logged in
+                const user = session.user;
+                const name = user.user_metadata?.full_name || 'User';
+                const initials = getInitials(name);
+
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="w-10 h-10 bg-skinks-primary text-white flex items-center justify-center rounded-full font-semibold text-sm hover:bg-skinks-secondary transition-colors duration-200" title="My Profile">
+                            ${initials}
+                        </a>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">
+                            My Profile
+                        </a>
+                    `;
+                }
+            } else {
+                // User is logged out
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+            }
+            lucide.createIcons(); // Re-render icons if any were added
+        });
+
+
+        // --- Navigation and Animation Logic ---
+
+        // 1. Mobile Menu Toggle Logic
         menuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
 
-        // 2. Placeholder for Join/Login (since we don't have Firebase setup yet)
-        function handleJoinClick() {
-            console.log("Join Clicked: Redirecting to Sign Up/Login Modal.");
-            // In a real app, this would redirect to 'post_task.html' or open a login modal.
-            window.location.href = 'post_task.html';
+        // 2. Placeholder for Join/Login (for CTA button)
+        window.handleJoinClick = function() {
+            console.log("Join Clicked: Redirecting to Task Hub.");
+            window.location.href = 'Post-Task.html';
         }
 
-        // 3. Scroll Reveal Animation Logic (Intersection Observer)
-        const observerOptions = {
-            root: null, // relative to the viewport
-            rootMargin: '0px',
-            threshold: 0.1 // visible when 10% of the item is in view
-        };
-
+        // 3. Scroll Reveal Animation Logic
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    observer.unobserve(entry.target); // Stop observing once visible
+                    observer.unobserve(entry.target); 
                 }
             });
         }, observerOptions);
 
-        // Apply observer to all sections marked for reveal
         document.querySelectorAll('.scroll-reveal').forEach(section => {
-            // Check if the element has content, exclude the main tag which is just a container
-            if (section.id !== 'main-content') {
-                observer.observe(section);
-            }
+            observer.observe(section);
         });
 
         // 4. Placeholder Search Logic
-        document.getElementById('talent-search-form').addEventListener('submit', function(event) {
+        document.getElementById('talent-search-form').addEventListener('submit', async function(event) {
             event.preventDefault();
-            const skill = document.getElementById('skill-search').value || 'a skill';
+            const skill = document.getElementById('skill-search').value;
             const distance = document.getElementById('distance').value;
-            console.log(`Searching for "${skill}" within ${distance} km...`);
-            // In a real app, this would trigger an API call to fetch actual nearby talent.
-
-            // Simulate search confirmation message
+            
             const searchButton = event.submitter;
             const originalText = searchButton.textContent;
             searchButton.textContent = `Searching...`;
             searchButton.disabled = true;
 
-            setTimeout(() => {
-                searchButton.textContent = originalText;
-                searchButton.disabled = false;
-                alertMessage(`Search complete! Showing results for nearby talent.`);
-            }, 1000);
+            // Call loadTalents with search query
+            await loadTalents(skill); 
+            
+            searchButton.textContent = originalText;
+            searchButton.disabled = false;
         });
 
-        // Simple custom non-alert message box function
+        // 5. Custom non-alert message box function
         function alertMessage(message) {
             let msgBox = document.getElementById('custom-alert');
             if (!msgBox) {
@@ -381,7 +375,107 @@
             }, 3000);
         }
 
+        // --- Supabase Talent Loading Logic ---
+        async function loadTalents(searchQuery = '') {
+            // 1. Show loading state
+            loadingSpinner.classList.remove('hidden');
+            talentList.classList.add('hidden');
+            noResults.classList.add('hidden');
+
+            let query = supabaseClient.from('talents').select('*');
+
+            // 2. Add search filter if provided
+            if (searchQuery) {
+                // This searches the 'skill' column. Update if needed.
+                query = query.ilike('skill', `%${searchQuery}%`); 
+            }
+
+            const { data, error } = await query;
+
+            // 3. Hide loading spinner
+            loadingSpinner.classList.add('hidden');
+
+            if (error) {
+                console.error('Error fetching talents:', error);
+                alertMessage("Error: Could not load talent.", true);
+                return;
+            }
+
+            // 4. Check for no results
+            if (!data || data.length === 0) {
+                noResults.classList.remove('hidden');
+                talentList.innerHTML = '';
+                return;
+            }
+
+            // 5. Populate and show list
+            talentList.innerHTML = ''; // Clear existing profiles
+            data.forEach((t) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-center space-x-4";
+                
+                // Use avatar_url if it exists, otherwise fall back to initials
+                let avatarHtml = '';
+                if (t.avatar_url) {
+                    avatarHtml = `<img src="${t.avatar_url}" alt="${t.name}" class="w-full h-full object-cover">`;
+                } else {
+                    avatarHtml = `<span class="text-2xl font-bold text-skinks-primary">${t.name ? getInitials(t.name) : '?'}</span>`;
+                }
+
+                // FIX: Handle null rating in LIST
+                let ratingHtml = '';
+                if (t.rating) {
+                    ratingHtml = `
+                        <span class="text-sm font-bold text-skinks-primary flex items-center flex-shrink-0 ml-2">
+                            <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1"></i> ${t.rating}
+                        </span>`;
+                } else {
+                    ratingHtml = `
+                        <span class="text-sm font-medium text-gray-400 flex items-center flex-shrink-0 ml-2">
+                            No ratings
+                        </span>`;
+                }
+
+
+                card.innerHTML = `
+                    <!-- Avatar/Initials -->
+                    <div class="flex-shrink-0 w-16 h-16 bg-skinks-secondary/20 rounded-full flex items-center justify-center overflow-hidden">
+                        ${avatarHtml}
+                    </div>
+                    <!-- Info -->
+                    <div class="flex-1 min-w-0"> <!-- min-w-0 fixes flex text truncation -->
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-semibold text-lg text-gray-900 truncate" title="${t.name}">${t.name}</h3>
+                            ${ratingHtml}
+                        </div>
+                        <p class="text-sm text-skinks-accent my-1 truncate" title="${t.skill}">${t.skill}</p>
+                        <p class="text-xs text-gray-500">Distance: ${t.distance} | Rate: ${t.rate}</p>
+                    </div>
+                    <!-- Button -->
+                    <div class="flex-shrink-0">
+                        <!-- UPDATED: This now links to the new profile page -->
+                        <button onclick="window.location.href='talent-profile.html?id=${t.id}'" class="px-4 py-2 text-sm bg-skinks-primary text-white rounded-lg hover:bg-skinks-secondary transition duration-200">
+                            View Profile
+                        </button>
+                    </div>
+                `;
+                talentList.appendChild(card);
+            });
+
+            talentList.classList.remove('hidden'); // Show the populated list
+            lucide.createIcons(); // Re-render icons for new cards
+        }
+
+        // --- Initial Page Load ---
+        
+        // Initialize Lucide icons on first load
+        lucide.createIcons();
+        
+        // Load all talents when the page first loads
+        loadTalents();
+
     </script>
+
 </body>
 </html>
 

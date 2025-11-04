@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -100,7 +102,6 @@
 
     <!-- Navigation Bar -->
     <header class="bg-white shadow-md sticky top-0 z-50">
-        <!-- ... existing header code ... -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
@@ -114,13 +115,13 @@
                     
                     <a href="find-talent.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Find Talent</a>
                     
-                    <a href="Post-Task .html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
+                    <a href="Post-Task.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">Task Hub</a>
                     <a href="About-Us.html" class="text-gray-600 hover:text-skinks-primary transition duration-150">About Us</a>
                     <!-- Active Link -->
                     <a href="help.html" class="text-skinks-primary font-semibold border-b-2 border-skinks-primary pb-1">Help</a>
                 </nav>
-                <!-- Call to Action Button -->
-                <div class="hidden md:block">
+                <!-- Call to Action Button Container -->
+                <div id="desktop-auth-container" class="hidden md:block">
                     <button onclick="handleJoinClick()" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
                         Join Now
                     </button>
@@ -138,12 +139,15 @@
                 <a href="How-It-Works.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
                 
                 <a href="find-talent.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Find Talent</a>
-                <a href="Post-Task .html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
+                <a href="Post-Task.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Task Hub</a>
                 <a href="About-Us.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">About Us</a>
                 <a href="help.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">Help</a>
-                <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
-                    Join Now
-                </button>
+                <!-- Mobile Auth Button Container -->
+                <div id="mobile-auth-container">
+                    <button onclick="handleJoinClick()" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                        Join Now
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -241,7 +245,6 @@
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-12 mt-16 scroll-reveal">
-        <!-- ... existing footer code ... -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
             
             <!-- Logo/Brand -->
@@ -255,9 +258,9 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="find_talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
-                    <li><a href="post_task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
-                    <li><a href="how_it_works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
+                    <li><a href="find-talent.html" class="hover:text-skinks-accent transition duration-150">Find Talent</a></li>
+                    <li><a href="Post-Task.html" class="hover:text-skinks-accent transition duration-150">Task Hub</a></li>
+                    <li><a href="How-It-Works.html" class="hover:text-skinks-accent transition duration-150">How It Works</a></li>
                     <li><a href="help.html" class="hover:text-skinks-accent transition duration-150">Help Center</a></li>
                 </ul>
             </div>
@@ -266,16 +269,9 @@
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-skinks-secondary">About</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="about_us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
+                    <li><a href="About-Us.html" class="hover:text-skinks-accent transition duration-150">About Us</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Team</a></li>
-                    <li><a href="#" class="hover:text-skinks-accent transition duration-1Examples of such tags include [Image of the human digestive system],  etc. Be very economical in your use of image tags, only add multiple tags if each additional tag is adding instructive value beyond pure illustration. Place the image tag immediately before or after the relevant text without disrupting the flow of the response.
-
-
-**Structure of the response when fixing code execution errors**
-Your response should consist of
-  * Immersive Document: The *entire* original document, with your code changes, enclosed within `<immersive>` and `` tags.
-  * Response to user: Should be exactly "I made some changes. [summary of changes]", where [summary of changes] is a short summary of the changes you made to the code.
--accent transition duration-150">Careers</a></li>
+                    <li><a href="#" class="hover:text-skinks-accent transition duration-150">Careers</a></li>
                     <li><a href="#" class="hover:text-skinks-accent transition duration-150">Terms & Privacy</a></li>
                 </ul>
             </div>
@@ -347,6 +343,14 @@ Your response should consist of
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, addDoc, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- NEW: Import Supabase Client ---
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+        // --- NEW: Supabase Configuration ---
+        const supabaseUrl = "https://zmfnuocezvjwebugnydw.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZm51b2NlenZqd2VidWdueWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQ5NzMsImV4cCI6MjA3MjMzMDk3M30.zby9E2HkMa0H0nIwmxoTgl_2pVlb-91i6yAubSg-mLs";
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
         // --- Firebase Configuration ---
         // These global variables are provided by the environment.
@@ -386,15 +390,74 @@ Your response should consist of
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // 1. Mobile Menu Toggle Logic
+        // --- UI Element Selectors ---
         const menuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
+        const desktopAuthContainer = document.getElementById('desktop-auth-container');
+        const mobileAuthContainer = document.getElementById('mobile-auth-container');
+
+        // --- NEW: Helper Function ---
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(' ');
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        // --- NEW: Auth State Change Handler ---
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+                // User is logged in
+                const user = session.user;
+                const name = user.user_metadata?.full_name || 'User';
+                const initials = getInitials(name);
+
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="w-10 h-10 bg-skinks-primary text-white flex items-center justify-center rounded-full font-semibold text-sm hover:bg-skinks-secondary transition-colors duration-200" title="My Profile">
+                            ${initials}
+                        </a>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <a href="myprofile.html" class="block px-3 py-2 rounded-md text-base font-medium text-skinks-primary bg-skinks-secondary/10">
+                            My Profile
+                        </a>
+                    `;
+                }
+            } else {
+                // User is logged out
+                // Update Desktop Header
+                if (desktopAuthContainer) {
+                    desktopAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg shadow-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+                // Update Mobile Header
+                if (mobileAuthContainer) {
+                    mobileAuthContainer.innerHTML = `
+                        <button onclick="window.location.href='login.html'" class="w-full mt-2 px-4 py-2 bg-skinks-primary text-white font-semibold rounded-lg hover:bg-skinks-secondary transition duration-300">
+                            Join Now
+                        </button>
+                    `;
+                }
+            }
+            lucide.createIcons();
+        });
+
+
+        // 1. Mobile Menu Toggle Logic
         menuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
         // 2. Placeholder for Join/Login
         window.handleJoinClick = () => {
-            console.log("Join Clicked: Redirecting to Home.");
-            window.location.href = 'index.html';
+            console.log("Join Clicked: Redirecting to login.html");
+            window.location.href = 'login.html';
         };
 
         // 3. Scroll Reveal Animation Logic
@@ -531,4 +594,3 @@ Your response should consist of
     </script>
 </body>
 </html>
-
